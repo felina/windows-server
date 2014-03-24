@@ -1,4 +1,5 @@
-﻿using JobServer.Models;
+﻿using JobServer.Executables;
+using JobServer.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -14,6 +15,7 @@ namespace JobServer.Controllers
         // GET api/job
         public IEnumerable<string> Get()
         {
+            ProcessManager.RunJob("C:\\Users\\narayn\\Documents\\GitHub\\windows-server\\JobServer\\JobServer\\bin\\TestExecutable.exe");
             return new string[] { "value1", "value2" };
         }
 
