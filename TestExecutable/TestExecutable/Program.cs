@@ -13,11 +13,13 @@ namespace TestExecutable
             if (args.Length != 2)
             {
                 Console.Error.WriteLine("Invalid Arguments");
+                //Console.ReadLine();
                 return 1;
             }
             else
             {
-                Console.WriteLine(0.75);
+                Console.WriteLine(new Random().NextDouble());
+                //Console.ReadLine(); // Uncomment me to get the window to stay open until you hit enter!
                 return 0;
             }
         }
