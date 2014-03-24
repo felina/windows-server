@@ -14,12 +14,34 @@ namespace JobServer.Executables
             return LaunchCommandLineApp(fileName, ImageA, ImageB);
         }
 
+        //Validates the image to make sure it's an MD-5 Hash
+        static bool ValidateImageName(String Image)
+        {
+            if (Image.Length == 32)
+            {
+                for (int i = 0; i < Image.Length; i++)
+                {
+                    if (char.IsUpper(Image[i]) && (!(char.IsNumber(Image[i]))))
+                        return false;
+                }
+                return true;
+            }
+            return false;
+        }
+
+
+
         static JobResult LaunchCommandLineApp(String fileName, String ImageA, String ImageB)
         {
+
+            if(!ValidateImageName(ImageA) || !ValidateImageName(ImageB)) {
+                return null;
+            }
+
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.FileName = fileName;
             startInfo.UseShellExecute = false;
-            startInfo.Arguments = "4 3";
+            startInfo.Arguments = ImageA + " " + ImageB;
             startInfo.RedirectStandardOutput = true;
             startInfo.RedirectStandardInput = false;
             startInfo.RedirectStandardError = false;
@@ -31,7 +53,7 @@ namespace JobServer.Executables
                 {
                     string a = exeProcess.StandardOutput.ReadToEnd();
                     exeProcess.WaitForExit();
-                    return new JobResult{JobId = 1, ImageA = "0deae28a26727ebe30ecf2896e5862f1", ImageB = "2d1dac96639c5e6f6246f9315625ccbc", ExitCode = exeProcess.ExitCode, Result = a } ;
+                    return new JobResult{JobId = 1, ImageA = ImageA, ImageB = ImageB, ExitCode = exeProcess.ExitCode, Result = a } ;
                 }
             }
             catch
