@@ -13,10 +13,10 @@ namespace JobServer.Controllers
     public class JobController : ApiController
     {
         // GET api/job
-        public IEnumerable<string> Get()
+        public JobResult Get()
         {
-            ProcessManager.RunJob("C:\\Users\\narayn\\Documents\\GitHub\\windows-server\\JobServer\\JobServer\\bin\\TestExecutable.exe");
-            return new string[] { "value1", "value2" };
+            return ProcessManager.RunJob("C:\\Users\\narayn\\Documents\\GitHub\\windows-server\\JobServer\\JobServer\\bin\\TestExecutable.exe", "Hi", "Again");
+            //return new string[] { "value1", "value2" };
         }
 
         // GET api/job/5
