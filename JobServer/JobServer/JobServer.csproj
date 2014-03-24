@@ -80,6 +80,7 @@
     <Compile Include="Controllers\JobController.cs" />
     <Compile Include="Controllers\JobResultsController.cs" />
     <Compile Include="Controllers\UploadController.cs" />
+    <Compile Include="Controllers\ZipUploadController.cs" />
     <Compile Include="Executables\ProcessManager.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
