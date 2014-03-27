@@ -29,8 +29,17 @@ namespace JobServer.Controllers
         public string Post([FromBody]Job value)
         {
             Debug.WriteLine("Being posted to");
-            Debug.WriteLine(value.ImageA);
-            return value.ImageB;
+
+            if (value == null)
+            {
+                Debug.WriteLine("Job Controller POST: Nothing recieved");
+                return "Nothing recieved";
+            }
+            else
+            {
+                Debug.WriteLine(value.ImageA);
+                return value.ImageB;
+            }
         }
 
         // PUT api/job/5
