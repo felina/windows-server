@@ -12,6 +12,8 @@ namespace JobServer.Controllers
 {
     public class ZipUploadController : ApiController
     {
+        
+        
         public async Task<HttpResponseMessage> PostFormData()
         {
             // Check the content type
@@ -32,6 +34,7 @@ namespace JobServer.Controllers
                 foreach (MultipartFileData file in provider.FileData)
                 {
                     Debug.WriteLine(file.Headers.ContentDisposition.FileName);
+                    Debug.WriteLine(file.TestArchive(true));
                 }
                 return Request.CreateResponse(HttpStatusCode.OK);
             }

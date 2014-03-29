@@ -38,6 +38,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Web.DynamicData" />
@@ -79,7 +83,6 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\JobController.cs" />
     <Compile Include="Controllers\JobResultsController.cs" />
-    <Compile Include="Controllers\UploadController.cs" />
     <Compile Include="Controllers\ZipUploadController.cs" />
     <Compile Include="Executables\ProcessManager.cs" />
     <Compile Include="Global.asax.cs">
@@ -87,7 +90,6 @@
     </Compile>
     <Compile Include="Models\Job.cs" />
     <Compile Include="Models\JobResult.cs" />
-    <Compile Include="Models\Upload.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
