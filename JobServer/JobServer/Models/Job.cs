@@ -8,7 +8,7 @@ namespace JobServer.Models
     public class Job
     {
         public int JobId { get; set; }
-        public string ImageA { get; set; }
-        public string ImageB { get; set; }
+        public int ZipId { get; set; }
+        public string[] Images { get; set; }
     }
 }

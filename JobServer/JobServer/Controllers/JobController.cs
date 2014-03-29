@@ -26,23 +26,6 @@ namespace JobServer.Controllers
             return "value";
         }
 
-        // POST api/job
-        public string Post([FromBody]Job value)
-        {
-            Debug.WriteLine("Being posted to");
-
-            if (value == null)
-            {
-                Debug.WriteLine("Job Controller POST: Nothing recieved");
-                return "Nothing recieved";
-            }
-            else
-            {
-                Debug.WriteLine(value.ImageA);
-                return value.ImageB;
-            }
-        }
-
         // PUT api/job/5
         public void Put(int id, [FromBody]string value)
         {

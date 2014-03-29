@@ -9,6 +9,11 @@ namespace JobServer.Executables
 {
     public class ProcessManager
     {
+        /// <summary>
+        /// Dictionary (map) of loaded jobs
+        /// </summary>
+        public static Dictionary<int, StoredJob> Jobs = new Dictionary<int, StoredJob>();
+
         public static JobResult RunJob(String fileName, String ImageA, String ImageB)
         {
             return LaunchCommandLineApp(fileName, ImageA, ImageB);
