@@ -13,15 +13,15 @@ namespace JobServer.Controllers
     public class JobProgressController : ApiController
     {
         // GET api/jobprogress/id
-        public JobProgress Get(int id)
+        public IHttpActionResult Get(int id)
         {
-            if (ProcessManager.Jobs.ContainsKey(id))
+            if (ProcessManager.JobExists(id))
             {
-                return JobProgress.CreateFromStored(ProcessManager.Jobs[id]);
+                return Ok(JobProgress.CreateFromStored(ProcessManager.GetJob(id)));
             }
             else
             {
-                return null;
+                return NotFound();
             }
         }
     }

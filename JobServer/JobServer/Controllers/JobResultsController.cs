@@ -1,4 +1,5 @@
 ﻿using JobServer.Models;
+using JobServer.Executables;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,25 +11,23 @@ namespace JobServer.Controllers
 {
     public class JobResultsController : ApiController
     {
-        private JobResult[] placeholderResults = new JobResult[]
+        /*public IEnumerable<JobResult> GetAllResults()
         {
-            new JobResult { JobId = 1, ImageA = "0deae28a26727ebe30ecf2896e5862f1", ImageB = "2d1dac96639c5e6f6246f9315625ccbc", ExitCode = 0, Result = "0.76" },
-            new JobResult { JobId = 1, ImageA = "0deae28a26727ebe30ecf2896e5862f1", ImageB = "30f811776cb26a19a693b6dcaa165a30", ExitCode = 0, Result = "0.35" }
-        };
+            JobResult[] results = new JobResult[ProcessManager.Jobs.Count];
+            // TODO... ?
+        }*/
 
-        public IEnumerable<JobResult> GetAllProducts()
+        public IHttpActionResult GetResult(int id)
         {
-            return placeholderResults;
-        }
-
-        public IHttpActionResult GetProduct(int id)
-        {
-            var result = placeholderResults.FirstOrDefault((p) => p.JobId == id);
-            if (result == null)
+            if (ProcessManager.JobExists(id))
+            {
+                var result = JobResult.CreateFromStored(ProcessManager.GetJob(id));
+                return Ok(result);
+            }
+            else
             {
                 return NotFound();
             }
-            return Ok(result);
         }
     }
 }

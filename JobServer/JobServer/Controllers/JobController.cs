@@ -13,7 +13,7 @@ namespace JobServer.Controllers
     public class JobController : ApiController
     {
         // GET api/job
-        public JobResult Get()
+        /*public JobResult Get()
         {
             return ProcessManager.RunJob("C:\\Users\\narayn\\Documents\\GitHub\\windows-server\\JobServer\\JobServer\\bin\\TestExecutable.exe", "Hiaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "Hiaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
             //return new string[] { "value1", "value2" };
@@ -34,6 +34,8 @@ namespace JobServer.Controllers
         // DELETE api/job/5
         public void Delete(int id)
         {
-        }
+        }*/
+
+        // TODO: Job control - pause, halt etc
     }
 }

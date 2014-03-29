@@ -13,23 +13,23 @@ namespace JobServer.Controllers
     public class CreateJobController : ApiController
     {
         // POST api/createjob
-        public string Post([FromBody]Job value)
+        public IHttpActionResult Post([FromBody]Job value)
         {
             // Check our input
             if (value == null)
             {
                 Debug.WriteLine("CreateJob POST: Nothing recieved");
-                return "Invalid or missing input";
+                return BadRequest("Invalid or missing job definition");
             }
 
             // Check for existing job
-            if (!ProcessManager.Jobs.ContainsKey(value.JobId))
+            if (!ProcessManager.JobExists(value.JobId))
             {
                 Debug.WriteLine("Storing new Job");
-                ProcessManager.Jobs[value.JobId] = new StoredJob(value);
-                return "New job " + value.JobId + " stored";
+                ProcessManager.AddJob(new StoredJob(value));
+                return Ok("New job " + value.JobId + " stored");
             }
-            else return "Job already exists";
+            else return BadRequest("Job already exists");
         }
     }
 }
