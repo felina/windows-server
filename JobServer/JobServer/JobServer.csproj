@@ -82,6 +82,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\CreateJobController.cs" />
     <Compile Include="Controllers\JobController.cs" />
+    <Compile Include="Controllers\JobProgressController.cs" />
     <Compile Include="Controllers\JobResultsController.cs" />
     <Compile Include="Controllers\ZipUploadController.cs" />
     <Compile Include="Executables\ProcessManager.cs" />
@@ -90,6 +91,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Job.cs" />
+    <Compile Include="Models\JobProgress.cs" />
     <Compile Include="Models\JobResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

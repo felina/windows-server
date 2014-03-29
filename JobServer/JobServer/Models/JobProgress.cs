@@ -18,7 +18,12 @@ namespace JobServer.Models
             JobProgress progress = new JobProgress();
             progress.Completed = job.Completed;
             progress.Started = job.Started;
-            progress.Progress = (float)job.Images.Length / (float)job.BatchIndex;
+
+            if (job.Completed) progress.Progress = 1;
+            else
+            {
+                progress.Progress = (float)job.BatchIndex / (float)job.Images.Length;
+            }
 
             return progress;
         }
