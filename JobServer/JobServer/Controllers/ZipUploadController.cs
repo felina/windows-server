@@ -34,7 +34,6 @@ namespace JobServer.Controllers
                 foreach (MultipartFileData file in provider.FileData)
                 {
                     Debug.WriteLine(file.Headers.ContentDisposition.FileName);
-                    Debug.WriteLine(file.TestArchive(true));
                 }
                 return Request.CreateResponse(HttpStatusCode.OK);
             }

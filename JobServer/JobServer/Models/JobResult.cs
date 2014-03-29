@@ -12,5 +12,6 @@ namespace JobServer.Models
         public string ImageB { get; set; }
         public int ExitCode { get; set; }
         public string Result { get; set; }
+        public string Errors { get; set; }
     }
 }
