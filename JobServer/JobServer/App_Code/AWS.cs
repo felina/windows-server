@@ -78,6 +78,8 @@ namespace JobServer.App_Start
             }
         }
 
+
+        // Saves an object from the server to a file (currently to dekstop)
         public static void GetObject(String key, bool priv)
         {
             using (client = Amazon.AWSClientFactory.CreateAmazonS3Client())
@@ -94,7 +96,8 @@ namespace JobServer.App_Start
                     {
                         string title = response.Metadata["x-amz-meta-title"];
                         Console.WriteLine("The object's title is {0}", title);
-                        string dest = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), key);
+                        string root = HttpContext.Current.Server.MapPath("~/App_Data");
+                        string dest = Path.Combine(root, key);
                         if (!File.Exists(dest))
                         {
                             response.WriteResponseStreamToFile(dest);
@@ -107,12 +110,12 @@ namespace JobServer.App_Start
                         (amazonS3Exception.ErrorCode.Equals("InvalidAccessKeyId") ||
                         amazonS3Exception.ErrorCode.Equals("InvalidSecurity")))
                     {
-                        Console.WriteLine("Please check the provided AWS Credentials.");
-                        Console.WriteLine("If you haven't signed up for Amazon S3, please visit http://aws.amazon.com/s3");
+                        Debug.WriteLine("Please check the provided AWS Credentials.");
+                        Debug.WriteLine("If you haven't signed up for Amazon S3, please visit http://aws.amazon.com/s3");
                     }
                     else
                     {
-                        Console.WriteLine("An error occurred with the message '{0}' when reading an object", amazonS3Exception.Message);
+                        Debug.WriteLine("An error occurred with the message '{0}' when reading an object", amazonS3Exception.Message);
                     }
                 }
             }
