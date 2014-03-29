@@ -10,7 +10,7 @@ namespace JobServer.Models
         public int JobId { get; set; }
         public string ImageA { get; set; }
         public string ImageB { get; set; }
-        public int ExitCode { get; set; }
+        public int? ExitCode { get; set; }
         public string Result { get; set; }
         public string Errors { get; set; }
     }
