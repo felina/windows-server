@@ -22,6 +22,7 @@ namespace JobServer.Controllers
         // GET api/job/5
         public string Get(int id)
         {
+            Debug.WriteLine("Job " + id + " requested");
             return "value";
         }
 
