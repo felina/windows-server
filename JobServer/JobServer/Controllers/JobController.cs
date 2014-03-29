@@ -1,4 +1,5 @@
-﻿using JobServer.Executables;
+﻿using JobServer.App_Start;
+using JobServer.Executables;
 using JobServer.Models;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,7 @@ namespace JobServer.Controllers
         // GET api/job/5
         public string Get(int id)
         {
+            AWS.GetObject("0deae28a26727ebe30ecf2896e5862f1", true);
             return "value";
         }
 
