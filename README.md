@@ -3,6 +3,8 @@ Windows Job Server
 
 Configuration and sample executables for the Windows computer vision server.
 
+*IMPORTANT* You will need to update Web.Release.config with your AWS keys in order to properly deploy the project. To avoid accidentally uploading these changes to the git repository, you should use the following command: `git update-index --assume-unchanged JobServer/JobServer/Web.Release.config`
+
 Contributing
 --------------
 
