@@ -85,6 +85,7 @@
     <Content Include="App_Code\AWS.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\CreateJobController.cs" />
+    <Compile Include="Controllers\EchoController.cs" />
     <Compile Include="Controllers\JobController.cs" />
     <Compile Include="Controllers\JobProgressController.cs" />
     <Compile Include="Controllers\JobResultsController.cs" />
@@ -101,6 +102,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+    <None Include="Properties\PublishProfiles\LocalServer.pubxml" />
     <None Include="Properties\PublishProfiles\TestFSPublish.pubxml" />
     <None Include="Properties\PublishProfiles\TestPublish.pubxml" />
     <None Include="Web.Debug.config">
