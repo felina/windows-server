@@ -79,7 +79,7 @@ namespace JobServer.App_Start
         }
 
 
-        // Saves an object from the server to a file (currently to dekstop)
+        // Saves an object from the server to a file (currently to App_Data)
         public static void GetObject(String key, bool priv)
         {
             using (client = Amazon.AWSClientFactory.CreateAmazonS3Client())

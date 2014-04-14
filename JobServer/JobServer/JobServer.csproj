@@ -82,7 +82,7 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Code\AWS.cs" />
+    <Compile Include="App_Code\AWS.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\CreateJobController.cs" />
     <Compile Include="Controllers\JobController.cs" />
