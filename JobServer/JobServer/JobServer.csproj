@@ -89,7 +89,6 @@
     <Compile Include="Controllers\JobController.cs" />
     <Compile Include="Controllers\JobProgressController.cs" />
     <Compile Include="Controllers\JobResultsController.cs" />
-    <Compile Include="Controllers\ZipUploadController.cs" />
     <Compile Include="Executables\ProcessManager.cs" />
     <Compile Include="Executables\StoredJob.cs" />
     <Compile Include="Global.asax.cs">
@@ -110,6 +109,7 @@
     </None>
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
+      <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>
