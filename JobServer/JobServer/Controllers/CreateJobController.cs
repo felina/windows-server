@@ -23,6 +23,10 @@ namespace JobServer.Controllers
         // POST api/createjob
         public IHttpActionResult Post([FromBody]Job value)
         {
+
+            //Testing
+            RetrieveExecutables("abcdefghijklmnopqrstuvwxyz123456", 2);
+                
             // Check our input
             if (value == null)
             {
@@ -38,6 +42,7 @@ namespace JobServer.Controllers
                 return Ok("New job " + value.JobId + " stored");
             }
             else return BadRequest("Job already exists");
+
         }
 
         public static void AllocateExecutables(String key, int jobId)
@@ -46,6 +51,7 @@ namespace JobServer.Controllers
             {
                 using (client = Amazon.AWSClientFactory.CreateAmazonS3Client())
                 {
+                    Debug.WriteLine("Should be recieving");
                     RetrieveExecutables(key, jobId);
                 }
             }
@@ -53,26 +59,37 @@ namespace JobServer.Controllers
 
 
 
-        //Get zip files from S3
+        //Get zip files from S3, then put them into the App_Data/Jobs directory under there jobId and then unzip them
         public static void RetrieveExecutables(String key, int jobId)
         {
             using (client = Amazon.AWSClientFactory.CreateAmazonS3Client())
             {
                 try
                 {
+                    Debug.WriteLine("Should be recieving");
                     GetObjectRequest request = new GetObjectRequest()
                     {
                         BucketName = "citizen.science.executable.storage",
                         Key = key
                     };
                     using (GetObjectResponse response = client.GetObject(request)) {
-                        string title = response.Metadata["x-amz-meta-title"];
-                        Console.WriteLine("The object's title is {0}", title);
-                        string root = HttpContext.Current.Server.MapPath("~/App_Data/Job/" + jobId); //Specify here where to save executables
+                        //string title = response.Metadata["x-amz-meta-title"];
+                        //Console.WriteLine("The object's title is {0}", title);
+                        string root = HttpContext.Current.Server.MapPath("~/App_Data/Jobs/"+jobId); //Specify here where to save executables
                         string dest = Path.Combine(root, key);
                         if (!File.Exists(dest))
                         {
                             response.WriteResponseStreamToFile(dest);
+                        }
+                        try
+                        {
+                            String zipPath = Path.Combine(HttpRuntime.AppDomainAppPath, "App_Data/Jobs/" + jobId + "/" + key);
+                            String extractPath = Path.Combine(HttpRuntime.AppDomainAppPath, "App_Data/Jobs/" + jobId + "/Extracted");
+                            System.IO.Compression.ZipFile.ExtractToDirectory(zipPath, extractPath);
+                        }
+                        catch
+                        {
+                            Debug.WriteLine("Executable already exists on server");
                         }
                     }
                 }

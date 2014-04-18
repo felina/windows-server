@@ -7,24 +7,29 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.IO;
+using System.Web;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace JobServer.Controllers
 {
     public class JobController : ApiController
     {
-        // GET api/job
-        /*public JobResult Get()
+        // POST api/job
+        public void Post(String data)
         {
-            return ProcessManager.RunJob("C:\\Users\\narayn\\Documents\\GitHub\\windows-server\\JobServer\\JobServer\\bin\\TestExecutable.exe", "Hiaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "Hiaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-            //return new string[] { "value1", "value2" };
+            Job inputJob = JsonConvert.DeserializeObject<Job>(data);
+            String ExecutablePath = Path.Combine(HttpRuntime.AppDomainAppPath, "App_Data/Jobs/" + inputJob.jobId + "/Extracted/" + inputJob.ZipId);
+            //Debug.WriteLine(inputJob.JobId);
         }
-
+        
         // GET api/job/5
-        public string Get(int id)
-        {
-            Debug.WriteLine("Job " + id + " requested");
-            return "value";
-        }
+        //public string Get(int id)
+        //{
+        //    Debug.WriteLine("Job " + id + " requested");
+        //    return "value";
+        //}
 
         // PUT api/job/5
         public void Put(int id, [FromBody]string value)
@@ -34,7 +39,7 @@ namespace JobServer.Controllers
         // DELETE api/job/5
         public void Delete(int id)
         {
-        }*/
+        }
 
         // TODO: Job control - pause, halt etc
     }
