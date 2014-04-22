@@ -9,7 +9,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using JobServer.App_Start;
+using JobServer.App_Code;
 using System.Web;
 using System.IO;
 
@@ -35,12 +35,14 @@ namespace JobServer.Controllers
             {
                 Debug.WriteLine("Storing new Job");
                 ProcessManager.AddJob(new StoredJob(value));
+                ProcessManager.RunJob("TestExecutable", value.JobId);
                 return Ok("New job " + value.JobId + " stored");
             }
             else return BadRequest("Job already exists");
 
         }
 
+        // Checks the AWS credentials and then saves the files from AWS onto the windows server
         public static void AllocateExecutables(int key, int jobId)
         {
             if (AWS.checkRequiredFields())

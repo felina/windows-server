@@ -11,7 +11,7 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 
-namespace JobServer.App_Start
+namespace JobServer.App_Code
 {
     public class AWS
     {
@@ -40,24 +40,24 @@ namespace JobServer.App_Start
             return true;
         }
 
-        public static void ListBucketUrls(string key, bool priv)
+        public static void ListBucketUrls(string key, string bucket)
         {
             if (checkRequiredFields())
             {
                 using (client = Amazon.AWSClientFactory.CreateAmazonS3Client())
                 {
-                    GetUrl(key, priv);
+                    GetUrl(key, bucket);
                 }
             }
         }
 
         //Gets the url of a given bucket
-        static void GetUrl(string key, bool priv)
+        static void GetUrl(string key, string bucket)
         {
             try
             {
                 var p = new GetPreSignedUrlRequest();
-                p.BucketName = priv ? "citizen.science.image.storage" : "citizen.science.image.storage.public";
+                p.BucketName = bucket;
                 p.Key = key;
                 p.Expires = DateTime.Now.AddHours(1);
                 Debug.WriteLine(client.GetPreSignedURL(p));
@@ -79,8 +79,8 @@ namespace JobServer.App_Start
         }
 
 
-        // Saves an object from the server to a file (currently to dekstop)
-        public static void GetObject(String key, bool priv)
+        // Saves an object from the server to a file (currently to App_Data)
+        public static void GetObject(string key, string bucket, int id)
         {
             using (client = Amazon.AWSClientFactory.CreateAmazonS3Client())
             {
@@ -88,15 +88,14 @@ namespace JobServer.App_Start
                 {
                     GetObjectRequest request = new GetObjectRequest()
                     {
-                        BucketName = priv ? "citizen.science.image.storage" : "citizen.science.image.storage.public",
+                        BucketName = bucket,
                         Key = key
                     };
-
                     using (GetObjectResponse response = client.GetObject(request))
                     {
                         string title = response.Metadata["x-amz-meta-title"];
                         Console.WriteLine("The object's title is {0}", title);
-                        string root = HttpContext.Current.Server.MapPath("~/App_Data");
+                        string root = HttpContext.Current.Server.MapPath("~/App_Data/Jobs/" + id + "/Images");
                         string dest = Path.Combine(root, key);
                         if (!File.Exists(dest))
                         {
