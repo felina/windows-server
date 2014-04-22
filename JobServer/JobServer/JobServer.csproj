@@ -86,6 +86,7 @@
   <ItemGroup>
     <Compile Include="App_Code\AWS.cs" />
     <Compile Include="App_Code\ImageDownload.cs" />
+    <Compile Include="App_Code\ResultUpload.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\CreateJobController.cs" />
     <Compile Include="Controllers\EchoController.cs" />

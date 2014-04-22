@@ -91,17 +91,7 @@ namespace JobServer.Controllers
                 }
                 catch (AmazonS3Exception amazonS3Exception)
                 {
-                    if (amazonS3Exception.ErrorCode != null &&
-                        (amazonS3Exception.ErrorCode.Equals("InvalidAccessKeyId") ||
-                        amazonS3Exception.ErrorCode.Equals("InvalidSecurity")))
-                    {
-                        Debug.WriteLine("Please check the provided AWS Credentials.");
-                        Debug.WriteLine("If you haven't signed up for Amazon S3, please visit http://aws.amazon.com/s3");
-                    }
-                    else
-                    {
-                        Debug.WriteLine("An error occurred with the message '{0}' when reading an object", amazonS3Exception.Message);
-                    }
+                    AWS.AWSerror(amazonS3Exception);
                 }
             }
         }

@@ -8,6 +8,7 @@ using JobServer.Controllers;
 using JobServer.App_Code;
 using System.Text;
 using System.IO;
+using JobServer.App_Code;
 
 namespace JobServer.Executables
 {
@@ -135,6 +136,7 @@ namespace JobServer.Executables
                     }
                 }
                 w.Close();
+                ResultUpload.AWSUpload(output, "citizen.science.image.storage.public", "5"); //Need to give upload name, currently hardcoded
             }
             catch
             {

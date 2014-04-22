@@ -40,6 +40,23 @@ namespace JobServer.App_Code
             return true;
         }
 
+
+        //Standard Error
+        public static void AWSerror(AmazonS3Exception amazonS3Exception)
+        {
+            if (amazonS3Exception.ErrorCode != null &&
+                    (amazonS3Exception.ErrorCode.Equals("InvalidAccessKeyId") ||
+                    amazonS3Exception.ErrorCode.Equals("InvalidSecurity")))
+            {
+                Debug.WriteLine("Please check the provided AWS Credentials.");
+            }
+            else
+            {
+                Debug.WriteLine("An Error, number {0}, occurred when listing buckets with the message '{1}", amazonS3Exception.ErrorCode, amazonS3Exception.Message);
+            }
+        }
+
+
         public static void ListBucketUrls(string key, string bucket)
         {
             if (checkRequiredFields())
@@ -64,17 +81,7 @@ namespace JobServer.App_Code
             }
             catch (AmazonS3Exception amazonS3Exception)
             {
-                if (amazonS3Exception.ErrorCode != null &&
-                    (amazonS3Exception.ErrorCode.Equals("InvalidAccessKeyId") ||
-                    amazonS3Exception.ErrorCode.Equals("InvalidSecurity")))
-                {
-                    Debug.WriteLine("Please check the provided AWS Credentials.");
-                    Debug.WriteLine("If you haven't signed up for Amazon S3, please visit http://aws.amazon.com/s3");
-                }
-                else
-                {
-                    Debug.WriteLine("An Error, number {0}, occurred when listing buckets with the message '{1}", amazonS3Exception.ErrorCode, amazonS3Exception.Message);
-                }
+                AWSerror(amazonS3Exception);
             }
         }
 
@@ -105,17 +112,7 @@ namespace JobServer.App_Code
                 }
                 catch (AmazonS3Exception amazonS3Exception)
                 {
-                    if (amazonS3Exception.ErrorCode != null &&
-                        (amazonS3Exception.ErrorCode.Equals("InvalidAccessKeyId") ||
-                        amazonS3Exception.ErrorCode.Equals("InvalidSecurity")))
-                    {
-                        Debug.WriteLine("Please check the provided AWS Credentials.");
-                        Debug.WriteLine("If you haven't signed up for Amazon S3, please visit http://aws.amazon.com/s3");
-                    }
-                    else
-                    {
-                        Debug.WriteLine("An error occurred with the message '{0}' when reading an object", amazonS3Exception.Message);
-                    }
+                    AWSerror(amazonS3Exception);
                 }
             }
         }
