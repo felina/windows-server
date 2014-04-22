@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Web;
+using System.IO;
 using JobServer.Controllers;
 
 namespace JobServer.Executables
@@ -18,15 +19,13 @@ namespace JobServer.Executables
         // Adds a new job
         public static void AddJob(StoredJob job)
         {
-            if (JobExists(job.JobId))
+            if (JobLoaded(job.JobId))
             {
                 Debug.WriteLine("Warning: Job ID " + job.JobId + " already exists (ProcessManager.AddJob()). Job was not added");
             }
             else
             {
-                //Save the files to the windows server, some error checking. Make sure that Jobs is alway uptodate with what is actually
-                // on the server    
-                CreateJobController.AllocateExecutables(job.ZipId, job.JobId);
+                // Load the job info into memory
                 Jobs[job.JobId] = job;
             }
         }
@@ -34,8 +33,25 @@ namespace JobServer.Executables
         // Returns a stored job
         public static StoredJob GetJob(int id)
         {
-            if (JobExists(id))
+            if (JobLoaded(id))
             {
+                return Jobs[id];
+            }
+            else if (JobCached(id))
+            {
+                Debug.WriteLine("Loading cached job");
+                Job job = new Job();
+                job.JobId = id;
+
+                // Get zipId from stored zip
+                string[] zips = Directory.GetFiles(HttpRuntime.AppDomainAppPath + "/App_Data/Jobs/" + id, "*.zip");
+                string file = Path.GetFileNameWithoutExtension(zips[0]);
+                job.ZipId = int.Parse(file);
+
+                // Get images to work on
+                job.Work = System.IO.File.ReadAllLines(HttpRuntime.AppDomainAppPath + "/App_Data/Jobs/" + id + "/work.txt");
+
+                Jobs[id] = new StoredJob(job);
                 return Jobs[id];
             }
             else
@@ -45,12 +61,16 @@ namespace JobServer.Executables
             }
         }
 
-        // Tests whether a job of given id is already stored
-        public static bool JobExists(int id)
+        // Tests if a job is loaded into memory
+        public static bool JobLoaded(int id)
         {
-            //return Jobs.ContainsKey(id);
-            // Checks server to see file exists on server, better to check the server to see if file exists
-            // just incase server crashes and dictionary is reset
+            return Jobs.ContainsKey(id);
+        }
+
+        // Tests whether a job of given id is already stored 
+        public static bool JobCached(int id)
+        {
+            // Checks server hard drive for the executable
             return System.IO.Directory.Exists(HttpContext.Current.Server.MapPath("~/App_Data/Jobs/"+id));
         }
 
