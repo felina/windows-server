@@ -17,18 +17,13 @@ namespace JobServer.Controllers
     public class JobController : ApiController
     {
         // POST api/job
-        public void Post(String data)
-        {
-            Job inputJob = JsonConvert.DeserializeObject<Job>(data);
-            String ExecutablePath = Path.Combine(HttpRuntime.AppDomainAppPath, "App_Data/Jobs/" + inputJob.jobId + "/Extracted/" + inputJob.ZipId);
-            //Debug.WriteLine(inputJob.JobId);
-        }
+        //public IHttpActionResult Post(String data)
+        //{
+        //}
         
         // GET api/job/5
         //public string Get(int id)
         //{
-        //    Debug.WriteLine("Job " + id + " requested");
-        //    return "value";
         //}
 
         // PUT api/job/5

@@ -4,13 +4,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Web;
+using JobServer.Controllers;
 
 namespace JobServer.Executables
 {
     public class ProcessManager
     {
         /// <summary>
-        /// Dictionary (map) of loaded jobs
+        /// Dictionary (map) of loaded jobs 
         /// </summary>
         private static Dictionary<int, StoredJob> Jobs = new Dictionary<int, StoredJob>();
 
@@ -23,6 +24,9 @@ namespace JobServer.Executables
             }
             else
             {
+                //Save the files to the windows server, some error checking. Make sure that Jobs is alway uptodate with what is actually
+                // on the server    
+                CreateJobController.AllocateExecutables(job.ZipId, job.JobId);
                 Jobs[job.JobId] = job;
             }
         }
@@ -44,7 +48,10 @@ namespace JobServer.Executables
         // Tests whether a job of given id is already stored
         public static bool JobExists(int id)
         {
-            return Jobs.ContainsKey(id);
+            //return Jobs.ContainsKey(id);
+            // Checks server to see file exists on server, better to check the server to see if file exists
+            // just incase server crashes and dictionary is reset
+            return System.IO.Directory.Exists(HttpContext.Current.Server.MapPath("~/App_Data/Jobs/"+id));
         }
 
         // Runs a job on the command line

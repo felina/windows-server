@@ -23,8 +23,8 @@ namespace JobServer.Executables
         {
             JobId = job.JobId;
             ZipId = job.ZipId;
-            Images = new string[job.Images.Length];
-            job.Images.CopyTo(Images, 0);
+            Images = new string[job.Work.Length];
+            job.Work.CopyTo(Images, 0);
         }
     }
 }

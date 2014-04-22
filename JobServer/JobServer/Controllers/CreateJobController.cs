@@ -22,11 +22,7 @@ namespace JobServer.Controllers
 
         // POST api/createjob
         public IHttpActionResult Post([FromBody]Job value)
-        {
-
-            //Testing
-            RetrieveExecutables("abcdefghijklmnopqrstuvwxyz123456", 2);
-                
+        {       
             // Check our input
             if (value == null)
             {
@@ -45,7 +41,7 @@ namespace JobServer.Controllers
 
         }
 
-        public static void AllocateExecutables(String key, int jobId)
+        public static void AllocateExecutables(int key, int jobId)
         {
             if (AWS.checkRequiredFields())
             {
@@ -60,7 +56,7 @@ namespace JobServer.Controllers
 
 
         //Get zip files from S3, then put them into the App_Data/Jobs directory under there jobId and then unzip them
-        public static void RetrieveExecutables(String key, int jobId)
+        public static void RetrieveExecutables(int key, int jobId)
         {
             using (client = Amazon.AWSClientFactory.CreateAmazonS3Client())
             {
@@ -70,13 +66,11 @@ namespace JobServer.Controllers
                     GetObjectRequest request = new GetObjectRequest()
                     {
                         BucketName = "citizen.science.executable.storage",
-                        Key = key
+                        Key = key.ToString() + ".zip"
                     };
                     using (GetObjectResponse response = client.GetObject(request)) {
-                        //string title = response.Metadata["x-amz-meta-title"];
-                        //Console.WriteLine("The object's title is {0}", title);
                         string root = HttpContext.Current.Server.MapPath("~/App_Data/Jobs/"+jobId); //Specify here where to save executables
-                        string dest = Path.Combine(root, key);
+                        string dest = Path.Combine(root, key.ToString());
                         if (!File.Exists(dest))
                         {
                             response.WriteResponseStreamToFile(dest);
