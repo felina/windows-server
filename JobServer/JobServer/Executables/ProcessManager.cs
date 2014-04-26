@@ -101,7 +101,6 @@ namespace JobServer.Executables
         }
 
 
-
         //Validates the image to make sure it's an MD-5 Hash
         static bool ValidateImageName(String Image)
         {
@@ -126,8 +125,7 @@ namespace JobServer.Executables
             // Working towards threading
             Thread downloadImages = new Thread(new ThreadStart(() => ImageDownload.Download(job, 100))); //MAKE SURE TO GET RID OF HARDCODE
             downloadImages.Start();
-
-
+            //StoredJob job = GetJob(jobId);
             WorkArray[] Images = job.Images;
             string filePath = HttpContext.Current.Server.MapPath("~/App_Data/Jobs/" + jobId + "/Extracted/" + fileName);
             string output = HttpContext.Current.Server.MapPath("~/App_Data/Jobs/" + jobId + "/results.csv");
