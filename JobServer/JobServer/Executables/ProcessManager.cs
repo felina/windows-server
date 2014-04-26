@@ -98,7 +98,6 @@ namespace JobServer.Executables
         }
 
 
-
         //Validates the image to make sure it's an MD-5 Hash
         static bool ValidateImageName(String Image)
         {

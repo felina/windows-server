@@ -17,7 +17,6 @@ namespace JobServer.Controllers
 {
     public class CreateJobController : ApiController
     {
-
         static IAmazonS3 client;
 
         // POST api/createjob
