@@ -31,35 +31,27 @@ namespace JobServer.Controllers
             }
 
             // Check for existing job
-            if (!ProcessManager.JobExists(value.JobId))
+            if (!ProcessManager.JobCached(value.JobId))
             {
-                Debug.WriteLine("Storing new Job");
-                ProcessManager.AddJob(new StoredJob(value));
-                ProcessManager.RunJob("TestExecutable", value.JobId);
+                Debug.WriteLine("Caching new Job");
+                CacheJob(value);
+                ProcessManager.AddJob(value);
+                Debug.WriteLine("Job stored");
+                // TODO: Run/queue the job
+                //ProcessManager.RunJob("TestExecutable", value.JobId);
                 return Ok("New job " + value.JobId + " stored");
             }
-            else return BadRequest("Job already exists");
-
+            else return BadRequest("Job already cached");
         }
 
-        // Checks the AWS credentials and then saves the files from AWS onto the windows server
-        public static void AllocateExecutables(int key, int jobId)
+        //Get zip file from S3, then store and extract it in the App_Data/Jobs directory under the jobId
+        public static void CacheJob(Job job)
         {
-            if (AWS.checkRequiredFields())
-            {
-                using (client = Amazon.AWSClientFactory.CreateAmazonS3Client())
-                {
-                    Debug.WriteLine("Should be recieving");
-                    RetrieveExecutables(key, jobId);
-                }
-            }
-        }
+            if (!AWS.checkRequiredFields()) return;
 
+            int key = job.ZipId;
+            int jobId = job.JobId;
 
-
-        //Get zip files from S3, then put them into the App_Data/Jobs directory under there jobId and then unzip them
-        public static void RetrieveExecutables(int key, int jobId)
-        {
             using (client = Amazon.AWSClientFactory.CreateAmazonS3Client())
             {
                 try
@@ -72,14 +64,14 @@ namespace JobServer.Controllers
                     };
                     using (GetObjectResponse response = client.GetObject(request)) {
                         string root = HttpContext.Current.Server.MapPath("~/App_Data/Jobs/"+jobId); //Specify here where to save executables
-                        string dest = Path.Combine(root, key.ToString());
+                        string dest = Path.Combine(root, key.ToString() + ".zip");
                         if (!File.Exists(dest))
                         {
                             response.WriteResponseStreamToFile(dest);
                         }
                         try
                         {
-                            String zipPath = Path.Combine(HttpRuntime.AppDomainAppPath, "App_Data/Jobs/" + jobId + "/" + key);
+                            String zipPath = Path.Combine(HttpRuntime.AppDomainAppPath, "App_Data/Jobs/" + jobId + "/" + key + ".zip");
                             String extractPath = Path.Combine(HttpRuntime.AppDomainAppPath, "App_Data/Jobs/" + jobId + "/Extracted");
                             System.IO.Compression.ZipFile.ExtractToDirectory(zipPath, extractPath);
                         }
@@ -88,6 +80,20 @@ namespace JobServer.Controllers
                             Debug.WriteLine("Executable already exists on server");
                         }
                     }
+
+                    // Store the "work" for the job
+                    string path = Path.Combine(HttpRuntime.AppDomainAppPath, "App_Data/Jobs/" + jobId + "/work.txt");
+                    string[] images = new string[job.Work.Length * 2];
+
+                    for (int i = 0; i < job.Work.Length; i++) {
+                        Work w = job.Work[i].Image1;
+                        Work w2 = job.Work[i].Image2;
+
+                        images[i*2] = w.Key + " " + w.Bucket;
+                        images[i * 2 + 1] = w2.Key + " " + w2.Bucket;
+                    }
+
+                    System.IO.File.WriteAllLines(path, images);
                 }
                 catch (AmazonS3Exception amazonS3Exception)
                 {

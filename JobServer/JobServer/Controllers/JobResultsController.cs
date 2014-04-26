@@ -19,7 +19,7 @@ namespace JobServer.Controllers
 
         public IHttpActionResult GetResult(int id)
         {
-            if (ProcessManager.JobExists(id))
+            if (ProcessManager.JobCached(id))
             {
                 var result = JobResult.CreateFromStored(ProcessManager.GetJob(id));
                 return Ok(result);

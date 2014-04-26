@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Web;
+using System.IO;
 using JobServer.Controllers;
 using JobServer.App_Code;
 using System.Text;
-using System.IO;
 using System.Threading;
 
 namespace JobServer.Executables
@@ -20,9 +20,9 @@ namespace JobServer.Executables
         private static Dictionary<int, StoredJob> Jobs = new Dictionary<int, StoredJob>();
 
         // Adds a new job
-        public static void AddJob(StoredJob job)
+        public static void AddJob(Job job)
         {
-            if (JobExists(job.JobId))
+            if (JobLoaded(job.JobId))
             {
                 Debug.WriteLine("Warning: Job ID " + job.JobId + " already exists (ProcessManager.AddJob()). Job was not added");
             }
@@ -30,19 +30,54 @@ namespace JobServer.Executables
             {
                 //Save the files to the windows server, some error checking. Make sure that Jobs is alway uptodate with what is actually
                 // on the server    
-                CreateJobController.AllocateExecutables(job.ZipId, job.JobId);
+                CreateJobController.CacheJob(job);
                 
-                //Temporary, wil fix soon, need to get multi-threading working
-                //ImageDownload.Download(job, 100);
-                Jobs[job.JobId] = job;
+                // Load the job info into memory
+                Jobs[job.JobId] = new StoredJob(job);
             }
         }
 
         // Returns a stored job
         public static StoredJob GetJob(int id)
         {
-            if (JobExists(id))
+            if (JobLoaded(id))
             {
+                return Jobs[id];
+            }
+            else if (JobCached(id))
+            {
+                Debug.WriteLine("Loading cached job");
+                Job job = new Job();
+                job.JobId = id;
+
+                // Get zipId from stored zip
+                string[] zips = Directory.GetFiles(HttpRuntime.AppDomainAppPath + "/App_Data/Jobs/" + id, "*.zip");
+                string file = Path.GetFileNameWithoutExtension(zips[0]);
+                job.ZipId = int.Parse(file);
+
+                // Get images to work on
+                string[] images = System.IO.File.ReadAllLines(HttpRuntime.AppDomainAppPath + "/App_Data/Jobs/" + id + "/work.txt");
+                job.Work = new WorkArray[images.Length / 2];
+
+                for (int i = 0; i < images.Length; i += 2)
+                {
+                    string[] l1 = images[i].Split(' ');
+                    string[] l2 = images[i + 1].Split(' ');
+
+                    Work w = new Work();
+                    Work w2 = new Work();
+
+                    w.Key = l1[0];
+                    w.Bucket = l1[1];
+
+                    w2.Key = l2[0];
+                    w2.Bucket = l2[0];
+
+                    job.Work[i / 2].Image1 = w;
+                    job.Work[i / 2].Image2 = w2;
+                }
+
+                Jobs[id] = new StoredJob(job);
                 return Jobs[id];
             }
             else
@@ -52,13 +87,17 @@ namespace JobServer.Executables
             }
         }
 
-        // Tests whether a job of given id is already stored
-        public static bool JobExists(int id)
+        // Tests if a job is loaded into memory
+        public static bool JobLoaded(int id)
         {
-            //return Jobs.ContainsKey(id);
-            // Checks server to see file exists on server, better to check the server to see if file exists
-            // just incase server crashes and dictionary is reset
-            return System.IO.Directory.Exists(HttpContext.Current.Server.MapPath("~/App_Data/Jobs/" + id));
+            return Jobs.ContainsKey(id);
+        }
+
+        // Tests whether a job of given id is already stored 
+        public static bool JobCached(int id)
+        {
+            // Checks server hard drive for the executable
+            return System.IO.Directory.Exists(HttpContext.Current.Server.MapPath("~/App_Data/Jobs/"+id));
         }
 
 
