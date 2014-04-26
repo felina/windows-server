@@ -128,9 +128,6 @@ namespace JobServer.Executables
             downloadImages.Start();
 
 
-
-            
-            //StoredJob job = GetJob(jobId);
             WorkArray[] Images = job.Images;
             string filePath = HttpContext.Current.Server.MapPath("~/App_Data/Jobs/" + jobId + "/Extracted/" + fileName);
             string output = HttpContext.Current.Server.MapPath("~/App_Data/Jobs/" + jobId + "/results.csv");
