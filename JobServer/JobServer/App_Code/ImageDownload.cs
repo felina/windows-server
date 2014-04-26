@@ -21,13 +21,14 @@ namespace JobServer.App_Code
             // Check that Job is actually stored on server before starting to save images
             if (Directory.Exists(path))
             {
+                string work = System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data/Jobs/" + value.JobId);
                 for (int i = 0; i < value.Images.Length && i < limit; i++)
                 {
                     //Downloads the images from AWS and saves to directory in which job is stored
                     Task image1 = Task.Factory.StartNew(() => AWS.GetObject(value.Images[i].Image1.Key, value.Images[i].Image1.Bucket, value.JobId));
                     Task image2 = Task.Factory.StartNew(() => AWS.GetObject(value.Images[i].Image2.Key, value.Images[i].Image1.Bucket, value.JobId));
                     Task.WaitAll(image1, image2);
-                    Debug.WriteLine("Download Complete");
+                    //Debug.WriteLine("Download Complete");
                 }
             }
             else
