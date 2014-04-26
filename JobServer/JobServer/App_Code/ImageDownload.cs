@@ -6,6 +6,8 @@ using System.Web;
 using JobServer.App_Code;
 using JobServer.Executables;
 using System.Diagnostics;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace JobServer.App_Code
 {
@@ -13,12 +15,26 @@ namespace JobServer.App_Code
     {
         public static void Download(StoredJob value, int limit)
         {
-            // NEED TO CHECK THAT JOB ACTUALLY STORED
-            for (int i = 0; i < value.Images.Length && i < limit; i++)
+            // Path where images will be stored
+            string path = System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data/Jobs/" + value.JobId);
+            
+            // Check that Job is actually stored on server before starting to save images
+            if (Directory.Exists(path))
             {
-                //Downloads the images from AWS and saves to directory in which job is stored
-                AWS.GetObject(value.Images[i].Image1.Key, value.Images[i].Image1.Bucket, value.JobId);
-                AWS.GetObject(value.Images[i].Image2.Key, value.Images[i].Image1.Bucket, value.JobId);
+                string work = System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data/Jobs/" + value.JobId);
+                for (int i = 0; i < value.Images.Length && i < limit; i++)
+                {
+                    //Downloads the images from AWS and saves to directory in which job is stored
+                    Task image1 = Task.Factory.StartNew(() => AWS.GetObject(value.Images[i].Image1.Key, value.Images[i].Image1.Bucket, value.JobId));
+                    Task image2 = Task.Factory.StartNew(() => AWS.GetObject(value.Images[i].Image2.Key, value.Images[i].Image1.Bucket, value.JobId));
+                    Task.WaitAll(image1, image2);
+                    //Debug.WriteLine("Download Complete");
+                }
+            }
+            else
+            {
+                // Log Error, possibly wait some time and try again
+                Console.WriteLine("Job is not stored");
             }
         }
     }

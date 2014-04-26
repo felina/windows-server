@@ -33,11 +33,10 @@ namespace JobServer.Controllers
             if (!ProcessManager.JobCached(value.JobId))
             {
                 Debug.WriteLine("Caching new Job");
-                CacheJob(value);
-                ProcessManager.AddJob(new StoredJob(value));
+                ProcessManager.AddJob(value);
                 Debug.WriteLine("Job stored");
                 // TODO: Run/queue the job
-                //ProcessManager.RunJob("TestExecutable", value.JobId);
+                ProcessManager.RunJob("TestExecutable", value.JobId);
                 return Ok("New job " + value.JobId + " stored");
             }
             else return BadRequest("Job already cached");
@@ -72,7 +71,10 @@ namespace JobServer.Controllers
                         {
                             String zipPath = Path.Combine(HttpRuntime.AppDomainAppPath, "App_Data/Jobs/" + jobId + "/" + key + ".zip");
                             String extractPath = Path.Combine(HttpRuntime.AppDomainAppPath, "App_Data/Jobs/" + jobId + "/Extracted");
+                            //String zipPath = System.Web.Hosting.HostingEnvironment.MapPath("~App_Data/Jobs/" + jobId + "/" + key + ".zip");
+                            //String extractPath =  System.Web.Hosting.HostingEnvironment.MapPath("~App_Data/Jobs/" + jobId + "/Extracted");
                             System.IO.Compression.ZipFile.ExtractToDirectory(zipPath, extractPath);
+                            //Debug.WriteLine("MADE IT");
                         }
                         catch
                         {
@@ -88,7 +90,7 @@ namespace JobServer.Controllers
                         Work w = job.Work[i].Image1;
                         Work w2 = job.Work[i].Image2;
 
-                        images[i*2] = w.Key + " " + w.Bucket;
+                        images[i * 2] = w.Key + " " + w.Bucket;
                         images[i * 2 + 1] = w2.Key + " " + w2.Bucket;
                     }
 
@@ -96,17 +98,7 @@ namespace JobServer.Controllers
                 }
                 catch (AmazonS3Exception amazonS3Exception)
                 {
-                    if (amazonS3Exception.ErrorCode != null &&
-                        (amazonS3Exception.ErrorCode.Equals("InvalidAccessKeyId") ||
-                        amazonS3Exception.ErrorCode.Equals("InvalidSecurity")))
-                    {
-                        Debug.WriteLine("Please check the provided AWS Credentials.");
-                        Debug.WriteLine("If you haven't signed up for Amazon S3, please visit http://aws.amazon.com/s3");
-                    }
-                    else
-                    {
-                        Debug.WriteLine("An error occurred with the message '{0}' when reading an object", amazonS3Exception.Message);
-                    }
+                    AWS.AWSerror(amazonS3Exception);
                 }
             }
         }

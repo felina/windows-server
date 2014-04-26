@@ -8,6 +8,7 @@ using System.IO;
 using JobServer.Controllers;
 using JobServer.App_Code;
 using System.Text;
+using System.Threading;
 
 namespace JobServer.Executables
 {
@@ -19,7 +20,7 @@ namespace JobServer.Executables
         private static Dictionary<int, StoredJob> Jobs = new Dictionary<int, StoredJob>();
 
         // Adds a new job
-        public static void AddJob(StoredJob job)
+        public static void AddJob(Job job)
         {
             if (JobLoaded(job.JobId))
             {
@@ -27,10 +28,12 @@ namespace JobServer.Executables
             }
             else
             {
-                //Temporary, wil fix soon
-                ImageDownload.Download(job, 100);
+                //Save the files to the windows server, some error checking. Make sure that Jobs is alway uptodate with what is actually
+                // on the server    
+                CreateJobController.CacheJob(job);
+                
                 // Load the job info into memory
-                Jobs[job.JobId] = job;
+                Jobs[job.JobId] = new StoredJob(job);
             }
         }
 
@@ -116,7 +119,14 @@ namespace JobServer.Executables
         // Launches the application on the command line and saves the results
         public static void RunJob(string fileName, int jobId)
         {
+            
             StoredJob job = GetJob(jobId);
+
+            // Working towards threading
+            Thread downloadImages = new Thread(new ThreadStart(() => ImageDownload.Download(job, 100))); //MAKE SURE TO GET RID OF HARDCODE
+            downloadImages.Start();
+            
+            //StoredJob job = GetJob(jobId);
             WorkArray[] Images = job.Images;
             string filePath = HttpContext.Current.Server.MapPath("~/App_Data/Jobs/" + jobId + "/Extracted/" + fileName);
             string output = HttpContext.Current.Server.MapPath("~/App_Data/Jobs/" + jobId + "/results.csv");
@@ -172,6 +182,7 @@ namespace JobServer.Executables
                     }
                 }
                 w.Close();
+                ResultUpload.AWSUpload(output, "citizen.science.image.storage.public", "5"); //Need to give upload name, currently hardcoded
             }
             catch
             {
