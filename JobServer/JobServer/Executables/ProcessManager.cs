@@ -31,7 +31,8 @@ namespace JobServer.Executables
                 //Save the files to the windows server, some error checking. Make sure that Jobs is alway uptodate with what is actually
                 // on the server    
                 CreateJobController.AllocateExecutables(job.ZipId, job.JobId);
-                //Temporary, wil fix soon
+                
+                //Temporary, wil fix soon, need to get multi-threading working
                 ImageDownload.Download(job, 100);
                 Jobs[job.JobId] = job;
             }
