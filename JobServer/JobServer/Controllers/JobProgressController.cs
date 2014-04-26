@@ -15,7 +15,7 @@ namespace JobServer.Controllers
         // GET api/jobprogress/id
         public IHttpActionResult Get(int id)
         {
-            if (ProcessManager.JobLoaded(id))
+            if (ProcessManager.JobCached(id))
             {
                 return Ok(JobProgress.CreateFromStored(ProcessManager.GetJob(id)));
             }
