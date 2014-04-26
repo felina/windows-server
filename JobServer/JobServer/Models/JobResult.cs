@@ -9,7 +9,7 @@ namespace JobServer.Models
     public class JobResult
     {
         public int JobId { get; set; }
-        public string[] Images { get; set; }
+        public WorkArray[] Images { get; set; }
         public int? ExitCode { get; set; }
         public string Result { get; set; }
         public string Errors { get; set; }
@@ -18,7 +18,7 @@ namespace JobServer.Models
         {
             JobResult result = new JobResult();
 
-            result.Images = new string[job.Images.Length];
+            result.Images = new WorkArray[job.Images.Length];
             job.Images.CopyTo(result.Images, 0);
 
             result.JobId = job.JobId;

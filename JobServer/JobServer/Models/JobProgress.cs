@@ -16,6 +16,9 @@ namespace JobServer.Models
         public static JobProgress CreateFromStored(StoredJob job)
         {
             JobProgress progress = new JobProgress();
+
+            progress.JobId = job.JobId;
+
             progress.Completed = job.Completed;
             progress.Started = job.Started;
 
