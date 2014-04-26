@@ -14,6 +14,7 @@ namespace JobServer.App_Code
 {
     public class ResultUpload
     {
+        // Uploads a csv file to AWS
         public static void AWSUpload(string filePath, string bucketName, string keyName)
         {
             try
