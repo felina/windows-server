@@ -81,10 +81,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Code\AWS.cs" />
+    <Compile Include="App_Code\ImageDownload.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\CreateJobController.cs" />
     <Compile Include="Controllers\EchoController.cs" />
@@ -96,9 +99,11 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Work.cs" />
     <Compile Include="Models\Job.cs" />
     <Compile Include="Models\JobProgress.cs" />
     <Compile Include="Models\JobResult.cs" />
+    <Compile Include="Models\WorkArray.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

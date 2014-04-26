@@ -9,7 +9,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using JobServer.App_Start;
+using JobServer.App_Code;
 using System.Web;
 using System.IO;
 
@@ -37,11 +37,12 @@ namespace JobServer.Controllers
                 CacheJob(value);
                 ProcessManager.AddJob(new StoredJob(value));
                 Debug.WriteLine("Job stored");
+                // TODO: Run/queue the job
+                //ProcessManager.RunJob("TestExecutable", value.JobId);
                 return Ok("New job " + value.JobId + " stored");
             }
             else return BadRequest("Job already cached");
         }
-
 
         //Get zip file from S3, then store and extract it in the App_Data/Jobs directory under the jobId
         public static void CacheJob(Job job)
@@ -82,7 +83,17 @@ namespace JobServer.Controllers
 
                     // Store the "work" for the job
                     string path = Path.Combine(HttpRuntime.AppDomainAppPath, "App_Data/Jobs/" + jobId + "/work.txt");
-                    System.IO.File.WriteAllLines(path, job.Work);
+                    string[] images = new string[job.Work.Length * 2];
+
+                    for (int i = 0; i < job.Work.Length; i++) {
+                        Work w = job.Work[i].Image1;
+                        Work w2 = job.Work[i].Image2;
+
+                        images[i*2] = w.Key + " " + w.Bucket;
+                        images[i * 2 + 1] = w2.Key + " " + w2.Bucket;
+                    }
+
+                    System.IO.File.WriteAllLines(path, images);
                 }
                 catch (AmazonS3Exception amazonS3Exception)
                 {

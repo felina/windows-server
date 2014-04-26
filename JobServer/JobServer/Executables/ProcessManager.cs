@@ -6,6 +6,8 @@ using System.Linq;
 using System.Web;
 using System.IO;
 using JobServer.Controllers;
+using JobServer.App_Code;
+using System.Text;
 
 namespace JobServer.Executables
 {
@@ -25,6 +27,8 @@ namespace JobServer.Executables
             }
             else
             {
+                //Temporary, wil fix soon
+                ImageDownload.Download(job, 100);
                 // Load the job info into memory
                 Jobs[job.JobId] = job;
             }
@@ -49,7 +53,26 @@ namespace JobServer.Executables
                 job.ZipId = int.Parse(file);
 
                 // Get images to work on
-                job.Work = System.IO.File.ReadAllLines(HttpRuntime.AppDomainAppPath + "/App_Data/Jobs/" + id + "/work.txt");
+                string[] images = System.IO.File.ReadAllLines(HttpRuntime.AppDomainAppPath + "/App_Data/Jobs/" + id + "/work.txt");
+                job.Work = new WorkArray[images.Length / 2];
+
+                for (int i = 0; i < images.Length; i += 2)
+                {
+                    string[] l1 = images[i].Split(' ');
+                    string[] l2 = images[i + 1].Split(' ');
+
+                    Work w = new Work();
+                    Work w2 = new Work();
+
+                    w.Key = l1[0];
+                    w.Bucket = l1[1];
+
+                    w2.Key = l2[0];
+                    w2.Bucket = l2[0];
+
+                    job.Work[i / 2].Image1 = w;
+                    job.Work[i / 2].Image2 = w2;
+                }
 
                 Jobs[id] = new StoredJob(job);
                 return Jobs[id];
@@ -74,11 +97,7 @@ namespace JobServer.Executables
             return System.IO.Directory.Exists(HttpContext.Current.Server.MapPath("~/App_Data/Jobs/"+id));
         }
 
-        // Runs a job on the command line
-        public static void RunJob(string fileName, int id)
-        {
-            LaunchCommandLineApp(fileName, id);
-        }
+
 
         //Validates the image to make sure it's an MD-5 Hash
         static bool ValidateImageName(String Image)
@@ -96,51 +115,64 @@ namespace JobServer.Executables
         }
 
         // Launches the application on the command line and saves the results
-        static void LaunchCommandLineApp(string fileName, int jobId)
+        public static void RunJob(string fileName, int jobId)
         {
             StoredJob job = GetJob(jobId);
-            string[] Images = job.Images;
+            WorkArray[] Images = job.Images;
+            string filePath = HttpContext.Current.Server.MapPath("~/App_Data/Jobs/" + jobId + "/Extracted/" + fileName);
+            string output = HttpContext.Current.Server.MapPath("~/App_Data/Jobs/" + jobId + "/results.csv");
 
             // Validate each image
-            foreach (string img in Images)
+            foreach (WorkArray img in Images)
             {
-                if (!ValidateImageName(img))
+                if (!ValidateImageName(img.Image1.Key) || !ValidateImageName(img.Image2.Key))
                 {
-                    Debug.WriteLine("Invalid image hash " + img + ". Aborting executable launch.");
+                    Debug.WriteLine("Invalid image hash " + img.Image1.Key + "or" + img.Image2.Key + ". Aborting executable launch.");
                     return;
                 }
             }
 
             ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.FileName = fileName;
+            startInfo.FileName = filePath;
             startInfo.UseShellExecute = false;
             startInfo.RedirectStandardOutput = true;
             startInfo.RedirectStandardInput = false;
             startInfo.RedirectStandardError = true;
             startInfo.CreateNoWindow = false;
 
-            // Generate the image arguments
-            string args = "";
-            foreach (string img in Images)
-            {
-                args = args + img + " ";
-            }
-
-            startInfo.Arguments = args;
+            //Set up header for file
+            var w = new StreamWriter(output);
+            var line = string.Format("{0},{1},{2}", "Image1", "Image2", "Result");
+            w.WriteLine(line);
+            w.Flush();
 
             try
             {
-                using (Process exeProcess = Process.Start(startInfo))
+                for (int i = 0; i < Images.Length; i++)
                 {
-                    string strOut = exeProcess.StandardOutput.ReadToEnd();
-                    string strErr = exeProcess.StandardError.ReadToEnd();
-                    exeProcess.WaitForExit();
+                    // Generate the image arguments
+                    startInfo.Arguments = Images[i].Image1.Key + " " + Images[i].Image2.Key;
+                                       
+                    using (Process exeProcess = Process.Start(startInfo))
+                    {
+                        string strOut = exeProcess.StandardOutput.ReadToEnd();
+                        string strErr = exeProcess.StandardError.ReadToEnd();
+                        exeProcess.WaitForExit();
 
-                    // Save the results
-                    job.Result = strOut;
-                    job.Errors = strErr;
-                    job.ExitCode = exeProcess.ExitCode;
+                        // Save the results
+                        job.Result = strOut;
+                        job.Errors = strErr;
+                        job.ExitCode = exeProcess.ExitCode;
+
+                        //Write to csv files
+                        var first = Images[i].Image1.Key;
+                        var second = Images[i].Image2.Key;
+                        line = string.Format("{0},{1},{2}", first, second, job.Result).Trim();
+                        w.WriteLine(line);
+                        w.Flush();
+                    }
                 }
+                w.Close();
             }
             catch
             {

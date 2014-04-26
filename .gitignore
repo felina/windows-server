@@ -112,3 +112,4 @@ Web.config
 
 # Add data
 App_Data/
+JobServer/JobServer/Web.config
