@@ -12,6 +12,10 @@ using System.Threading;
 
 namespace JobServer.Executables
 {
+    /// <summary>
+    /// Manages Jobs in the server memory.
+    /// Also responsible for running the Job executables and storing their results.
+    /// </summary>
     public class ProcessManager
     {
         /// <summary>

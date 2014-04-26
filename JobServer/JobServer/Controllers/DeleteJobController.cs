@@ -15,9 +15,16 @@ using System.IO;
 
 namespace JobServer.Controllers
 {
+    /// <summary>
+    /// Provides a job deletion API endpoint
+    /// </summary>
     public class DeleteJobController : ApiController
     {
-        // api/deletejob/id
+        /// <summary>
+        /// Called with api/deletejob/id. Deletes the given job if it exists and is not in progress.
+        /// </summary>
+        /// <param name="id">Job ID</param>
+        /// <returns>OK if the job was deleted, BadRequest otherwise</returns>
         public IHttpActionResult Get(int id)
         {
             if (ProcessManager.RemoveJob(id))

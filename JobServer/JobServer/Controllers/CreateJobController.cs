@@ -15,11 +15,28 @@ using System.IO;
 
 namespace JobServer.Controllers
 {
+    /// <summary>
+    /// Provides a job creation API endpoint
+    /// </summary>
     public class CreateJobController : ApiController
     {
         static IAmazonS3 client;
 
-        // POST api/createjob
+        /// <summary>
+        /// <para>
+        /// POST api/createjob. Accepts a JSON Job Model object, which, if valid, is stored.
+        /// The job is stored in memory in the ProcessManager, and cached to the hard drive.
+        /// </para>
+        /// <para>
+        /// Jobs created this way are queued for execution - their progress and results can
+        /// be checked using the otehr api methods.
+        /// </para>
+        /// <para>
+        /// The Job's ID must not already be in use on the server.
+        /// </para>
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns>OK if the job was created, BadRequest otherwise</returns>
         public IHttpActionResult Post([FromBody]Job value)
         {       
             // Check our input
@@ -43,6 +60,17 @@ namespace JobServer.Controllers
         }
 
         //Get zip file from S3, then store and extract it in the App_Data/Jobs directory under the jobId
+        /// <summary>
+        /// <para>
+        /// Retrieves the Job's .zip from AWS and extracts it to the job's directory on the hard drive.
+        /// The job's Work allocation is also stored as a text file.
+        /// </para>
+        /// <para>
+        /// Jobs cached in this way can later be retrieved - the ProcessManager does this automatically
+        /// when a job cannot be found in memory.
+        /// </para>
+        /// </summary>
+        /// <param name="job">Job Model object to cache</param>
         public static void CacheJob(Job job)
         {
             if (!AWS.checkRequiredFields()) return;

@@ -6,6 +6,9 @@ using JobServer.Models;
 
 namespace JobServer.Executables
 {
+    /// <summary>
+    /// Information about a job as stored in memory
+    /// </summary>
     public class StoredJob
     {
         public int JobId;
@@ -19,7 +22,10 @@ namespace JobServer.Executables
         public string Result = "";
         public string Errors = "";
 
-        // Copies an input job's parameters
+        /// <summary>
+        /// Copies a Job Model object's parameters to a new StoredJob object
+        /// </summary>
+        /// <param name="job">Job to copy</param>
         public StoredJob(Job job)
         {
             JobId = job.JobId;

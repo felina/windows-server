@@ -9,14 +9,17 @@ using System.Web.Http;
 
 namespace JobServer.Controllers
 {
+    /// <summary>
+    /// Provides an API endpoint for retrieving the results of a given job
+    /// </summary>
     public class JobResultsController : ApiController
     {
-        /*public IEnumerable<JobResult> GetAllResults()
-        {
-            JobResult[] results = new JobResult[ProcessManager.Jobs.Count];
-            // TODO... ?
-        }*/
-
+        /// <summary>
+        /// GET api/jobresults/id. Returns OK with a JSON JobResult object describing
+        /// the job's results, or NotFound if the job does not exist.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public IHttpActionResult GetResult(int id)
         {
             if (ProcessManager.JobCached(id))
