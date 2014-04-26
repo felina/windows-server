@@ -102,7 +102,7 @@ namespace JobServer.App_Code
                     {
                         string title = response.Metadata["x-amz-meta-title"];
                         Console.WriteLine("The object's title is {0}", title);
-                        string root = HttpContext.Current.Server.MapPath("~/App_Data/Jobs/" + id + "/Images");
+                        string root = System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data/Jobs/" + id + "/Images");
                         string dest = Path.Combine(root, key);
                         if (!File.Exists(dest))
                         {

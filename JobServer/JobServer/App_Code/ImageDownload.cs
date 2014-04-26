@@ -15,7 +15,7 @@ namespace JobServer.App_Code
         public static void Download(StoredJob value, int limit)
         {
             // Path where images will be stored
-            string path = HttpContext.Current.Server.MapPath("~/App_Data/Jobs/" + value.JobId);
+            string path = System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data/Jobs/" + value.JobId);
             
             // Check that Job is actually stored on server before starting to save images
             if (Directory.Exists(path))
@@ -29,7 +29,7 @@ namespace JobServer.App_Code
             }
             else
             {
-                // Log Error
+                // Log Error, possibly wait some time and try again
                 Console.WriteLine("Job is not stored");
             }
         }

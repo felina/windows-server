@@ -8,7 +8,7 @@ using JobServer.Controllers;
 using JobServer.App_Code;
 using System.Text;
 using System.IO;
-using JobServer.App_Code;
+using System.Threading;
 
 namespace JobServer.Executables
 {
@@ -33,7 +33,7 @@ namespace JobServer.Executables
                 CreateJobController.AllocateExecutables(job.ZipId, job.JobId);
                 
                 //Temporary, wil fix soon, need to get multi-threading working
-                ImageDownload.Download(job, 100);
+                //ImageDownload.Download(job, 100);
                 Jobs[job.JobId] = job;
             }
         }
@@ -81,7 +81,20 @@ namespace JobServer.Executables
         // Launches the application on the command line and saves the results
         public static void RunJob(string fileName, int jobId)
         {
+            
             StoredJob job = GetJob(jobId);
+            //ImageDownload.Download obj = new ImageDownload();
+           //ImageDownload.Download(job, 100);
+
+
+            // Working towards threading
+            Thread downloadImages = new Thread(new ThreadStart(() => ImageDownload.Download(job, 100))); //MAKE SURE TO GET RID OF HARDCODE
+            downloadImages.Start();
+
+
+
+            
+            //StoredJob job = GetJob(jobId);
             WorkArray[] Images = job.Images;
             string filePath = HttpContext.Current.Server.MapPath("~/App_Data/Jobs/" + jobId + "/Extracted/" + fileName);
             string output = HttpContext.Current.Server.MapPath("~/App_Data/Jobs/" + jobId + "/results.csv");
