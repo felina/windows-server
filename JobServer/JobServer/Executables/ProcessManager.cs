@@ -9,6 +9,7 @@ using JobServer.Controllers;
 using JobServer.App_Code;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace JobServer.Executables
 {
@@ -101,21 +102,6 @@ namespace JobServer.Executables
         }
 
 
-        //Validates the image to make sure it's an MD-5 Hash
-        static bool ValidateImageName(String Image)
-        {
-            if (Image.Length == 32)
-            {
-                for (int i = 0; i < Image.Length; i++)
-                {
-                    if (char.IsUpper(Image[i]) && (!(char.IsNumber(Image[i]))))
-                        return false;
-                }
-                return true;
-            }
-            return false;
-        }
-
         // Launches the application on the command line and saves the results
         public static void RunJob(string fileName, int jobId)
         {
@@ -123,70 +109,17 @@ namespace JobServer.Executables
             StoredJob job = GetJob(jobId);
 
             // Working towards threading
-            Thread downloadImages = new Thread(new ThreadStart(() => ImageDownload.Download(job, 100))); //MAKE SURE TO GET RID OF HARDCODE
-            downloadImages.Start();
-            //StoredJob job = GetJob(jobId);
-            WorkArray[] Images = job.Images;
-            string filePath = HttpContext.Current.Server.MapPath("~/App_Data/Jobs/" + jobId + "/Extracted/" + fileName);
-            string output = HttpContext.Current.Server.MapPath("~/App_Data/Jobs/" + jobId + "/results.csv");
+            //Thread downloadImages = new Thread(new ThreadStart(() => new ImageDownload().Download(job, 100))); //MAKE SURE TO GET RID OF HARDCODE
+            //downloadImages.Start();
 
-            // Validate each image
-            foreach (WorkArray img in Images)
-            {
-                if (!ValidateImageName(img.Image1.Key) || !ValidateImageName(img.Image2.Key))
-                {
-                    Debug.WriteLine("Invalid image hash " + img.Image1.Key + "or" + img.Image2.Key + ". Aborting executable launch.");
-                    return;
-                }
-            }
-
-            ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.FileName = filePath;
-            startInfo.UseShellExecute = false;
-            startInfo.RedirectStandardOutput = true;
-            startInfo.RedirectStandardInput = false;
-            startInfo.RedirectStandardError = true;
-            startInfo.CreateNoWindow = false;
-
-            //Set up header for file
-            var w = new StreamWriter(output);
-            var line = string.Format("{0},{1},{2}", "Image1", "Image2", "Result");
-            w.WriteLine(line);
-            w.Flush();
-
-            try
-            {
-                for (int i = 0; i < Images.Length; i++)
-                {
-                    // Generate the image arguments
-                    startInfo.Arguments = Images[i].Image1.Key + " " + Images[i].Image2.Key;
-                                       
-                    using (Process exeProcess = Process.Start(startInfo))
-                    {
-                        string strOut = exeProcess.StandardOutput.ReadToEnd();
-                        string strErr = exeProcess.StandardError.ReadToEnd();
-                        exeProcess.WaitForExit();
-
-                        // Save the results
-                        job.Result = strOut;
-                        job.Errors = strErr;
-                        job.ExitCode = exeProcess.ExitCode;
-
-                        //Write to csv files
-                        var first = Images[i].Image1.Key;
-                        var second = Images[i].Image2.Key;
-                        line = string.Format("{0},{1},{2}", first, second, job.Result).Trim();
-                        w.WriteLine(line);
-                        w.Flush();
-                    }
-                }
-                w.Close();
-                ResultUpload.AWSUpload(output, "citizen.science.image.storage.public", "5"); //Need to give upload name, currently hardcoded
-            }
-            catch
-            {
-                //Log error
-            }
+            //string output = 
+            //Thread runningTasks = new Thread(new ThreadStart(() => new StartTask().RunTask(fileName, jobId)));
+            //runningTasks.Start();
+            Task downloadImages = Task.Factory.StartNew(() => new ImageDownload().Download(job, 100));
+            Task runningTasks = Task.Factory.StartNew(() => new StartTask().RunTask(fileName, jobId));
+            // Debug.WriteLine("Hello");
+            Task.WaitAll(downloadImages, runningTasks);        
         }
+
     }
 }

@@ -13,8 +13,11 @@ namespace JobServer.App_Code
 {
     public class ImageDownload
     {
-        public static void Download(StoredJob value, int limit)
+        public void Download(StoredJob value, int limit)
         {
+
+
+
             // Path where images will be stored
             string path = System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data/Jobs/" + value.JobId);
             
@@ -28,8 +31,11 @@ namespace JobServer.App_Code
                     Task image1 = Task.Factory.StartNew(() => AWS.GetObject(value.Images[i].Image1.Key, value.Images[i].Image1.Bucket, value.JobId));
                     Task image2 = Task.Factory.StartNew(() => AWS.GetObject(value.Images[i].Image2.Key, value.Images[i].Image1.Bucket, value.JobId));
                     Task.WaitAll(image1, image2);
+                    //SHOULD BE PUSHING ONTO A QUE
+                    GlobalQueue.AddToQueue(value.JobId, value.Images[i].Image1.Key, value.Images[i].Image2.Key); //Should refer to location where images are stored
                     //Debug.WriteLine("Download Complete");
                 }
+                //FINISHED
             }
             else
             {
