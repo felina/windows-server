@@ -83,9 +83,6 @@ namespace JobServer.Executables
         {
             
             StoredJob job = GetJob(jobId);
-            //ImageDownload.Download obj = new ImageDownload();
-           //ImageDownload.Download(job, 100);
-
 
             // Working towards threading
             Thread downloadImages = new Thread(new ThreadStart(() => ImageDownload.Download(job, 100))); //MAKE SURE TO GET RID OF HARDCODE
