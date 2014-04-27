@@ -6,6 +6,9 @@ using JobServer.Executables;
 
 namespace JobServer.Models
 {
+    /// <summary>
+    /// Describes the results of a job
+    /// </summary>
     public class JobResult
     {
         public int JobId { get; set; }
@@ -14,6 +17,11 @@ namespace JobServer.Models
         public string Result { get; set; }
         public string Errors { get; set; }
 
+        /// <summary>
+        /// Creates a new Job Result object reporting the results of a given job
+        /// </summary>
+        /// <param name="job">StoredJob representing the job to report on</param>
+        /// <returns>New JobResult object</returns>
         public static JobResult CreateFromStored(StoredJob job)
         {
             JobResult result = new JobResult();

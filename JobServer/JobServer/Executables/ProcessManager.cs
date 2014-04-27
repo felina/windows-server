@@ -13,6 +13,10 @@ using System.Threading.Tasks;
 
 namespace JobServer.Executables
 {
+    /// <summary>
+    /// Manages Jobs in the server memory.
+    /// Also responsible for running the Job executables and storing their results.
+    /// </summary>
     public class ProcessManager
     {
         /// <summary>
@@ -20,7 +24,20 @@ namespace JobServer.Executables
         /// </summary>
         private static Dictionary<int, StoredJob> Jobs = new Dictionary<int, StoredJob>();
 
-        // Adds a new job
+        /// <summary>
+        /// Utility function
+        /// </summary>
+        /// <param name="id">ID of job</param>
+        /// <returns>The path to the given job</returns>
+        private static string JobPath(int id)
+        {
+            return HttpRuntime.AppDomainAppPath + "/App_Data/Jobs/" + id;
+        }
+
+        /// <summary>
+        /// Adds a new job - to both the cache and application memory
+        /// </summary>
+        /// <param name="job">Job Model object to store</param>
         public static void AddJob(Job job)
         {
             if (JobLoaded(job.JobId))
@@ -38,7 +55,54 @@ namespace JobServer.Executables
             }
         }
 
-        // Returns a stored job
+        /// <summary>
+        /// Removes a job from memory and the cache. Aborts if the job is running, or if it isn't cached.
+        /// </summary>
+        /// <param name="id">ID of job to remove</param>
+        /// <returns>Whether the job was removed</returns>
+        public static bool RemoveJob(int id)
+        {
+            bool cached = JobCached(id);
+
+            if (!cached)
+            {
+                Debug.WriteLine("Warning: Attempted to remove job which is not in the cache (" + id + ")");
+                return false;
+            }
+
+            // Remove from memory
+            if (JobLoaded(id))
+            {
+                StoredJob job = GetJob(id);
+
+                // Check it's not running
+                if (job.Started && !job.Completed)
+                {
+                    return false;
+                }
+
+                Jobs.Remove(id);
+            }
+
+            // Remove from cache
+            try
+            {
+                Directory.Delete(JobPath(id), true);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Retrieves a stored job. Loads the job from the cache if not in memory already.
+        /// </summary>
+        /// <param name="id">ID of job to load</param>
+        /// <returns>The StoredJob object for the job</returns>
         public static StoredJob GetJob(int id)
         {
             if (JobLoaded(id))
@@ -90,21 +154,33 @@ namespace JobServer.Executables
             }
         }
 
-        // Tests if a job is loaded into memory
+        /// <summary>
+        /// Tests if a job is loaded into memory
+        /// </summary>
+        /// <param name="id">Job ID</param>
+        /// <returns>Whether the job exists in the Job dictionary</returns>
         public static bool JobLoaded(int id)
         {
             return Jobs.ContainsKey(id);
         }
 
-        // Tests whether a job of given id is already stored 
+        /// <summary>
+        /// Tests whether a job is cached on the hard drive, independent of whether it is loaded in memory
+        /// </summary>
+        /// <param name="id">Job ID</param>
+        /// <returns>Whether the job exists on the hard drive</returns>
         public static bool JobCached(int id)
         {
             // Checks server hard drive for the executable
             return System.IO.Directory.Exists(HttpContext.Current.Server.MapPath("~/App_Data/Jobs/"+id));
         }
 
-
-        // Launches the application on the command line and saves the results
+        /// <summary>
+        /// Queues the Job for execution on the command line. Results and progress are available
+        /// from its StoredJob object.
+        /// </summary>
+        /// <param name="fileName">Name of the executable in the Job's .zip</param>
+        /// <param name="jobId">Job ID</param>
         public static void RunJob(string fileName, int jobId)
         {
             // Threading of tasks

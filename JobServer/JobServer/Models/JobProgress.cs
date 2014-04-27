@@ -6,6 +6,9 @@ using JobServer.Executables;
 
 namespace JobServer.Models
 {
+    /// <summary>
+    /// Describes the progress of a job
+    /// </summary>
     public class JobProgress
     {
         public int JobId { get; set; }
@@ -13,6 +16,11 @@ namespace JobServer.Models
         public bool Completed { get; set; }
         public float Progress { get; set; }
 
+        /// <summary>
+        /// Creates a Progress report object from a given StoredJob object
+        /// </summary>
+        /// <param name="job">Job to report on</param>
+        /// <returns>New JobProgress object</returns>
         public static JobProgress CreateFromStored(StoredJob job)
         {
             JobProgress progress = new JobProgress();
