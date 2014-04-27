@@ -97,7 +97,8 @@ namespace JobServer.App_Code
                 }
                 w.Close();
                 job.Completed = true; //Sifnifies that the job is now complete
-                ResultUpload.AWSUpload(output, "citizen.science.image.storage.public", "5"); //Need to give upload name, currently hardcoded
+                //Given upload destination is currently the jobId
+                ResultUpload.AWSUpload(output, "citizen.science.image.storage.public", job.JobId.ToString());
             }
             catch
             {
