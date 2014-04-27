@@ -1,17 +1,6 @@
-﻿using Amazon.S3;
-using Amazon.S3.Model;
-using JobServer.Executables;
-using JobServer.Models;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
+﻿using JobServer.Executables;
 using System.Web.Http;
-using JobServer.App_Code;
-using System.Web;
-using System.IO;
+using Newtonsoft.Json;
 
 namespace JobServer.Controllers
 {
@@ -24,16 +13,24 @@ namespace JobServer.Controllers
         /// Called with api/deletejob/id. Deletes the given job if it exists and is not in progress.
         /// </summary>
         /// <param name="id">Job ID</param>
-        /// <returns>OK if the job was deleted, BadRequest otherwise</returns>
-        public IHttpActionResult Get(int id)
+        /// <returns>JSON Response ('res' indicates success or failure)</returns>
+        public string Get(int id)
         {
             if (ProcessManager.RemoveJob(id))
             {
-                return Ok();
+                return JsonConvert.SerializeObject(new
+                    {
+                        res = true,
+                        jobId = id
+                    });
             }
             else
             {
-                return BadRequest("Job in progress or non-existent");
+                return JsonConvert.SerializeObject(new
+                    {
+                        res = false,
+                        message = "Unable to delete job"
+                    });
             }
         }
     }
