@@ -87,15 +87,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Code\AWS.cs" />
+    <Compile Include="App_Code\GlobalQueue.cs" />
     <Compile Include="App_Code\ImageDownload.cs" />
+    <Compile Include="App_Code\JobQueue.cs" />
     <Compile Include="App_Code\ResultUpload.cs" />
+    <Compile Include="App_Code\StartTask.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\DeleteJobController.cs" />
     <Compile Include="Controllers\CreateJobController.cs" />
     <Compile Include="Controllers\EchoController.cs" />
     <Compile Include="Controllers\JobController.cs" />
     <Compile Include="Controllers\JobProgressController.cs" />
-    <Compile Include="Controllers\JobResultsController.cs" />
+    <Compile Include="Executables\JobResultsController.cs" />
     <Compile Include="Executables\ProcessManager.cs" />
     <Compile Include="Executables\StoredJob.cs" />
     <Compile Include="Global.asax.cs">

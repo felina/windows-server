@@ -12,6 +12,7 @@ using System.Web.Http;
 using JobServer.App_Code;
 using System.Web;
 using System.IO;
+using Newtonsoft.Json;
 
 namespace JobServer.Controllers
 {
@@ -35,15 +36,15 @@ namespace JobServer.Controllers
         /// The Job's ID must not already be in use on the server.
         /// </para>
         /// </summary>
-        /// <param name="value"></param>
-        /// <returns>OK if the job was created, BadRequest otherwise</returns>
-        public IHttpActionResult Post([FromBody]Job value)
+        /// <param name="value">JSON representing job</param>
+        /// <returns>JSON Response indicating success</returns>
+        public string Post([FromBody]Job value)
         {       
             // Check our input
             if (value == null)
             {
                 Debug.WriteLine("CreateJob POST: Nothing recieved");
-                return BadRequest("Invalid or missing job definition");
+                return "Invalid or missing job definition";
             }
 
             // Check for existing job
@@ -54,16 +55,29 @@ namespace JobServer.Controllers
                 Debug.WriteLine("Job stored");
                 // TODO: Run/queue the job
                 ProcessManager.RunJob("TestExecutable", value.JobId);
-                return Ok("New job " + value.JobId + " stored");
+                String result = JsonConvert.SerializeObject(new
+                    {
+                        res = true,
+                        jobId = value.JobId
+                    });
+                //return Ok("New job " + value.JobId + " stored");
+                return result;
             }
-            else return BadRequest("Job already cached");
+            else
+            {
+                String result = JsonConvert.SerializeObject(new
+                    {
+                        res = false,
+                        message = "Job already Cached"
+                    });
+                return result;
+            }
         }
 
-        //Get zip file from S3, then store and extract it in the App_Data/Jobs directory under the jobId
         /// <summary>
         /// <para>
-        /// Retrieves the Job's .zip from AWS and extracts it to the job's directory on the hard drive.
-        /// The job's Work allocation is also stored as a text file.
+        /// Retrieves the Job's .zip from AWS and extracts it to the App_Data/Jobs directory under the jobId.
+        /// The job's Work allocation is also stored here as a text file.
         /// </para>
         /// <para>
         /// Jobs cached in this way can later be retrieved - the ProcessManager does this automatically
@@ -99,10 +113,7 @@ namespace JobServer.Controllers
                         {
                             String zipPath = Path.Combine(HttpRuntime.AppDomainAppPath, "App_Data/Jobs/" + jobId + "/" + key + ".zip");
                             String extractPath = Path.Combine(HttpRuntime.AppDomainAppPath, "App_Data/Jobs/" + jobId + "/Extracted");
-                            //String zipPath = System.Web.Hosting.HostingEnvironment.MapPath("~App_Data/Jobs/" + jobId + "/" + key + ".zip");
-                            //String extractPath =  System.Web.Hosting.HostingEnvironment.MapPath("~App_Data/Jobs/" + jobId + "/Extracted");
                             System.IO.Compression.ZipFile.ExtractToDirectory(zipPath, extractPath);
-                            //Debug.WriteLine("MADE IT");
                         }
                         catch
                         {

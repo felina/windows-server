@@ -9,6 +9,7 @@ using JobServer.Controllers;
 using JobServer.App_Code;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace JobServer.Executables
 {
@@ -123,19 +124,21 @@ namespace JobServer.Executables
                 string[] images = System.IO.File.ReadAllLines(HttpRuntime.AppDomainAppPath + "/App_Data/Jobs/" + id + "/work.txt");
                 job.Work = new WorkArray[images.Length / 2];
 
+                Work w = new Work();
+                Work w2 = new Work();
+
                 for (int i = 0; i < images.Length; i += 2)
                 {
                     string[] l1 = images[i].Split(' ');
                     string[] l2 = images[i + 1].Split(' ');
-
-                    Work w = new Work();
-                    Work w2 = new Work();
 
                     w.Key = l1[0];
                     w.Bucket = l1[1];
 
                     w2.Key = l2[0];
                     w2.Bucket = l2[0];
+
+                    job.Work[i] = new WorkArray();
 
                     job.Work[i / 2].Image1 = w;
                     job.Work[i / 2].Image2 = w2;
@@ -173,100 +176,21 @@ namespace JobServer.Executables
         }
 
         /// <summary>
-        /// Checks the image hash is valid MD-5
-        /// </summary>
-        /// <param name="Image">String Image hash</param>
-        /// <returns></returns>
-        static bool ValidateImageName(String Image)
-        {
-            if (Image.Length == 32)
-            {
-                for (int i = 0; i < Image.Length; i++)
-                {
-                    if (char.IsUpper(Image[i]) && (!(char.IsNumber(Image[i]))))
-                        return false;
-                }
-                return true;
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Launches the Job's executable on the cammand line and saves the results in memory
+        /// Queues the Job for execution on the command line. Results and progress are available
+        /// from its StoredJob object.
         /// </summary>
         /// <param name="fileName">Name of the executable in the Job's .zip</param>
         /// <param name="jobId">Job ID</param>
         public static void RunJob(string fileName, int jobId)
         {
             
-            StoredJob job = GetJob(jobId);
-
-            // Working towards threading
-            Thread downloadImages = new Thread(new ThreadStart(() => ImageDownload.Download(job, 100))); //MAKE SURE TO GET RID OF HARDCODE
-            downloadImages.Start();
             
-            //StoredJob job = GetJob(jobId);
-            WorkArray[] Images = job.Images;
-            string filePath = HttpContext.Current.Server.MapPath("~/App_Data/Jobs/" + jobId + "/Extracted/" + fileName);
-            string output = HttpContext.Current.Server.MapPath("~/App_Data/Jobs/" + jobId + "/results.csv");
 
-            // Validate each image
-            foreach (WorkArray img in Images)
-            {
-                if (!ValidateImageName(img.Image1.Key) || !ValidateImageName(img.Image2.Key))
-                {
-                    Debug.WriteLine("Invalid image hash " + img.Image1.Key + "or" + img.Image2.Key + ". Aborting executable launch.");
-                    return;
-                }
-            }
-
-            ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.FileName = filePath;
-            startInfo.UseShellExecute = false;
-            startInfo.RedirectStandardOutput = true;
-            startInfo.RedirectStandardInput = false;
-            startInfo.RedirectStandardError = true;
-            startInfo.CreateNoWindow = false;
-
-            //Set up header for file
-            var w = new StreamWriter(output);
-            var line = string.Format("{0},{1},{2}", "Image1", "Image2", "Result");
-            w.WriteLine(line);
-            w.Flush();
-
-            try
-            {
-                for (int i = 0; i < Images.Length; i++)
-                {
-                    // Generate the image arguments
-                    startInfo.Arguments = Images[i].Image1.Key + " " + Images[i].Image2.Key;
-                                       
-                    using (Process exeProcess = Process.Start(startInfo))
-                    {
-                        string strOut = exeProcess.StandardOutput.ReadToEnd();
-                        string strErr = exeProcess.StandardError.ReadToEnd();
-                        exeProcess.WaitForExit();
-
-                        // Save the results
-                        job.Result = strOut;
-                        job.Errors = strErr;
-                        job.ExitCode = exeProcess.ExitCode;
-
-                        //Write to csv files
-                        var first = Images[i].Image1.Key;
-                        var second = Images[i].Image2.Key;
-                        line = string.Format("{0},{1},{2}", first, second, job.Result).Trim();
-                        w.WriteLine(line);
-                        w.Flush();
-                    }
-                }
-                w.Close();
-                ResultUpload.AWSUpload(output, "citizen.science.image.storage.public", "5"); //Need to give upload name, currently hardcoded
-            }
-            catch
-            {
-                //Log error
-            }
+            // Change the number to allow more simultaneously running executables
+            //if (JobQueue.RunningTasks < 4)
+            //{
+                // Threading of tasks
+            JobQueue.AddToQueue(fileName, jobId);
         }
     }
 }
