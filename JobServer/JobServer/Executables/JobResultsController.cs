@@ -17,16 +17,22 @@ namespace JobServer.Controllers
             // TODO... ?
         }*/
 
-        public IHttpActionResult GetResult(int id)
+        public string GetResult(int id)
         {
             if (ProcessManager.JobCached(id))
             {
+                // Make sure job is actually completed before sending results
+                if (!ProcessManager.GetJob(id).Completed)
+                {
+                    return "Job not completed";
+                }
                 var result = JobResult.CreateFromStored(ProcessManager.GetJob(id));
-                return Ok(result);
+                //return Ok(result);
+                return "OK";
             }
             else
             {
-                return NotFound();
+                return "Not Found";
             }
         }
     }

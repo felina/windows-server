@@ -108,13 +108,13 @@ namespace JobServer.Executables
         public static void RunJob(string fileName, int jobId)
         {
             
-            StoredJob job = GetJob(jobId);
+            
 
-            // Threading of tasks
-            Task downloadImages = Task.Factory.StartNew(() => new ImageDownload().Download(job, 100));
-            Task runningTasks = Task.Factory.StartNew(() => new StartTask().RunTask(fileName, jobId));
-            Task.WaitAll(downloadImages, runningTasks);        
+            // Change the number to allow more simultaneously running executables
+            //if (JobQueue.RunningTasks < 4)
+            //{
+                // Threading of tasks
+            JobQueue.AddToQueue(fileName, jobId);
         }
-
     }
 }

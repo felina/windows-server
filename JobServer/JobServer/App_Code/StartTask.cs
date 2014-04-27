@@ -69,11 +69,11 @@ namespace JobServer.App_Code
                     if (i == 0)
                     {
                         job.Started = true;
+                        JobQueue.RunningTasks += 1;
                     }
                     job.BatchIndex = i; // Helps to give the progress of the code
                     Tuple<string, string> arguments = GlobalQueue.RemoveFromQueue(jobId);
                     // Generate the image arguments
-                    //startInfo.Arguments = Images[i].Image1.Key + " " + Images[i.Key;].Image2
                     startInfo.Arguments = arguments.Item1 + " " + arguments.Item2 + " ";
 
                     using (Process exeProcess = Process.Start(startInfo))
@@ -98,6 +98,14 @@ namespace JobServer.App_Code
                 w.Close();
                 job.Completed = true; //Sifnifies that the job is now complete
                 //Given upload destination is currently the jobId
+                JobQueue.RunningTasks -= 1; // Frees up space for the next running executable
+               
+                //Debugging
+                for (int i = 0; i < JobQueue.LeftOnQueue().Length; i++)
+                    //{
+                    //    Debug.WriteLine(JobQueue.LeftOnQueue()[i].ToString());
+                    //}
+                JobQueue.AllocateJobs();
                 ResultUpload.AWSUpload(output, "citizen.science.image.storage.public", job.JobId.ToString());
             }
             catch
