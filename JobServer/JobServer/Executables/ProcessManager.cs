@@ -60,19 +60,21 @@ namespace JobServer.Executables
                 string[] images = System.IO.File.ReadAllLines(HttpRuntime.AppDomainAppPath + "/App_Data/Jobs/" + id + "/work.txt");
                 job.Work = new WorkArray[images.Length / 2];
 
+                Work w = new Work();
+                Work w2 = new Work();
+
                 for (int i = 0; i < images.Length; i += 2)
                 {
                     string[] l1 = images[i].Split(' ');
                     string[] l2 = images[i + 1].Split(' ');
-
-                    Work w = new Work();
-                    Work w2 = new Work();
 
                     w.Key = l1[0];
                     w.Bucket = l1[1];
 
                     w2.Key = l2[0];
                     w2.Bucket = l2[0];
+
+                    job.Work[i] = new WorkArray();
 
                     job.Work[i / 2].Image1 = w;
                     job.Work[i / 2].Image2 = w2;
@@ -108,16 +110,9 @@ namespace JobServer.Executables
             
             StoredJob job = GetJob(jobId);
 
-            // Working towards threading
-            //Thread downloadImages = new Thread(new ThreadStart(() => new ImageDownload().Download(job, 100))); //MAKE SURE TO GET RID OF HARDCODE
-            //downloadImages.Start();
-
-            //string output = 
-            //Thread runningTasks = new Thread(new ThreadStart(() => new StartTask().RunTask(fileName, jobId)));
-            //runningTasks.Start();
+            // Threading of tasks
             Task downloadImages = Task.Factory.StartNew(() => new ImageDownload().Download(job, 100));
             Task runningTasks = Task.Factory.StartNew(() => new StartTask().RunTask(fileName, jobId));
-            // Debug.WriteLine("Hello");
             Task.WaitAll(downloadImages, runningTasks);        
         }
 
