@@ -17,6 +17,7 @@ namespace JobServer.App_Code
     {
         static IAmazonS3 client;
 
+        //Checks that the User has properly setup the AWS keys
         public static bool checkRequiredFields()
         {
             NameValueCollection appConfig = ConfigurationManager.AppSettings;
@@ -41,7 +42,7 @@ namespace JobServer.App_Code
         }
 
 
-        //Standard Error
+        //The standard error used throughout the server when using AWS
         public static void AWSerror(AmazonS3Exception amazonS3Exception)
         {
             if (amazonS3Exception.ErrorCode != null &&
@@ -56,32 +57,26 @@ namespace JobServer.App_Code
             }
         }
 
-
-        public static void ListBucketUrls(string key, string bucket)
+        //Gets the url of a given bucket
+        static void GetUrl(string key, string bucket)
         {
             if (checkRequiredFields())
             {
                 using (client = Amazon.AWSClientFactory.CreateAmazonS3Client())
                 {
-                    GetUrl(key, bucket);
+                    try
+                    {
+                        var p = new GetPreSignedUrlRequest();
+                        p.BucketName = bucket;
+                        p.Key = key;
+                        p.Expires = DateTime.Now.AddHours(1);
+                        Debug.WriteLine(client.GetPreSignedURL(p));
+                    }
+                    catch (AmazonS3Exception amazonS3Exception)
+                    {
+                        AWSerror(amazonS3Exception);
+                    }
                 }
-            }
-        }
-
-        //Gets the url of a given bucket
-        static void GetUrl(string key, string bucket)
-        {
-            try
-            {
-                var p = new GetPreSignedUrlRequest();
-                p.BucketName = bucket;
-                p.Key = key;
-                p.Expires = DateTime.Now.AddHours(1);
-                Debug.WriteLine(client.GetPreSignedURL(p));
-            }
-            catch (AmazonS3Exception amazonS3Exception)
-            {
-                AWSerror(amazonS3Exception);
             }
         }
 
@@ -101,7 +96,7 @@ namespace JobServer.App_Code
                     using (GetObjectResponse response = client.GetObject(request))
                     {
                         string title = response.Metadata["x-amz-meta-title"];
-                        Console.WriteLine("The object's title is {0}", title);
+                        //Console.WriteLine("The object's title is {0}", title);
                         string root = System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data/Jobs/" + id + "/Images");
                         string dest = Path.Combine(root, key);
                         if (!File.Exists(dest))

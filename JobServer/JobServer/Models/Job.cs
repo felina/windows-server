@@ -9,6 +9,7 @@ namespace JobServer.Models
     {
         public int JobId { get; set; }
         public int ZipId { get; set; }
+        public string Command { get; set; }
         public WorkArray[] Work { get; set; }
     }
 }

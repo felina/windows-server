@@ -37,13 +37,13 @@ namespace JobServer.Controllers
                 ProcessManager.AddJob(value);
                 Debug.WriteLine("Job stored");
                 // TODO: Run/queue the job
-                ProcessManager.RunJob("TestExecutable", value.JobId);
                 String result = JsonConvert.SerializeObject(new
                     {
                         res = true,
                         jobId = value.JobId
                     });
-                //return Ok("New job " + value.JobId + " stored");
+                Action a = delegate { ProcessManager.RunJob(value.Command, value.JobId); }; //Change to actual name 
+                a();
                 return result;
             }
             else
