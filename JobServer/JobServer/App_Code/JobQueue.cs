@@ -80,20 +80,28 @@ namespace JobServer.App_Code
             return TaskQueue.Count;
         }
 
+<<<<<<< HEAD
         /// <summary>
         /// <para>Removes (pops) the first job in the queue, reducing its size by one.</para>
         /// <para>This returns the (command, JobID) tuple stored in the queue.</para>
         /// </summary>
         /// <returns>(command, JobID) tuple which was removed.</returns>
+=======
+        // Takes a job off of the queue 
+>>>>>>> 9aca6e5d4fb1d0ad2ab22a6415fe841b5bac7738
         public static Tuple<string, int> RemoveFromQueue()
         {
             return TaskQueue.Dequeue();
         }
 
+<<<<<<< HEAD
         /// <summary>
         /// Returns the jobs currently left on the queue as an array of JobIDs.
         /// </summary>
         /// <returns>Array of JobIDs left in the queue</returns>
+=======
+        // Returns an array of jobs that are remaining on the queue
+>>>>>>> 9aca6e5d4fb1d0ad2ab22a6415fe841b5bac7738
         public static int[] LeftOnQueue()
         {
             Tuple<string,int>[] values = TaskQueue.ToArray();
