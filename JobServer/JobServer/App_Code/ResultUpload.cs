@@ -1,22 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-using Amazon;
 using Amazon.S3;
-using Amazon.S3.Model;
 using Amazon.S3.Transfer;
-using System.IO;
-using System.Diagnostics;
-
-
 
 namespace JobServer.App_Code
 {
+    /// <summary>
+    /// Static class which provides AWS upload functionality for the Job Results.
+    /// </summary>
     public static class ResultUpload
     {
-        // Uploads a csv file to AWS
+        /// <summary>
+        /// Uploads a CSV results file to shared AWS storage, allowing access to the results by other system components.
+        /// </summary>
+        /// <param name="filePath">Path of the file to upload.</param>
+        /// <param name="bucketName">Bucket to upload to.</param>
+        /// <param name="keyName">Storage key - used for retrieval. ".csv" is appended to this.</param>
         public static void AWSUpload(string filePath, string bucketName, string keyName)
         {
             try

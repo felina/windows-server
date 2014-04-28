@@ -2,14 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Web;
 using System.IO;
 using JobServer.Controllers;
 using JobServer.App_Code;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace JobServer.Executables
 {
@@ -82,6 +78,8 @@ namespace JobServer.Executables
                 }
 
                 Jobs.Remove(id);
+
+                // TODO: Remove from queue if present
             }
 
             // Remove from cache
@@ -116,12 +114,12 @@ namespace JobServer.Executables
                 job.JobId = id;
 
                 // Get zipId from stored zip
-                string[] zips = Directory.GetFiles(HttpRuntime.AppDomainAppPath + "/App_Data/Jobs/" + id, "*.zip");
+                string[] zips = Directory.GetFiles(JobPath(id), "*.zip");
                 string file = Path.GetFileNameWithoutExtension(zips[0]);
                 job.ZipId = int.Parse(file);
 
                 // Get images to work on
-                string[] images = System.IO.File.ReadAllLines(HttpRuntime.AppDomainAppPath + "/App_Data/Jobs/" + id + "/work.txt");
+                string[] images = System.IO.File.ReadAllLines(JobPath(id) + "/work.txt");
                 job.Work = new WorkArray[images.Length / 2];
 
                 Work w = new Work();

@@ -9,10 +9,16 @@ using System.Web;
 
 namespace JobServer.App_Code
 {
+    /// <summary>
+    /// Allows parallel execution of Jobs.
+    /// </summary>
     public class StartTask
     {
-
-        //Validates the image to make sure it's an MD-5 Hash
+        /// <summary>
+        /// Static method - checks valididty of given image hash.
+        /// </summary>
+        /// <param name="Image">Hash to check.</param>
+        /// <returns>Whether the hash is valid.</returns>
         static bool ValidateImageName(String Image)
         {
             if (Image.Length == 32)
@@ -27,6 +33,12 @@ namespace JobServer.App_Code
             return false;
         }
 
+        /// <summary>
+        /// <para>Attempts to execute the given Job.</para>
+        /// <para>Output is stored line-by-line in "results.csv" in the App_Data/{id} folder for the job.</para>
+        /// </summary>
+        /// <param name="fileName">Name of executable to run from the Job's .zip.</param>
+        /// <param name="jobId">Job's ID.</param>
         public void RunTask(string fileName, int jobId)
         {
             StoredJob job = ProcessManager.GetJob(jobId);
@@ -126,7 +138,7 @@ namespace JobServer.App_Code
             }
             catch
             {
-                //Log error
+                // TODO: Log error
             }
         }
     }

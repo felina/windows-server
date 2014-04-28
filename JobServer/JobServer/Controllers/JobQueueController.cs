@@ -1,18 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
-
+﻿using System.Web.Http;
 using JobServer.App_Code;
 using Newtonsoft.Json;
 
 namespace JobServer.Controllers
 {
+    /// <summary>
+    /// Provides an API endpoint for retrieving the jobs left on the execution Queue.
+    /// </summary>
     public class JobQueueController : ApiController
     {
-        // GET api/jobqueue
+        /// <summary>
+        /// GET api/jobqueue. Returns a JSON response containing an array of JobIDs left on the execution Queue.
+        /// </summary>
+        /// <returns>Array of JobIDs on the execution Queue.</returns>
         public string Get()
         {
             int[] remaining = JobQueue.LeftOnQueue();
