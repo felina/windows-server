@@ -96,17 +96,15 @@ namespace JobServer.App_Code
                     }
                 }
                 w.Close();
-                job.Completed = true; //Sifnifies that the job is now complete
+                job.Completed = true; //Signifies that the job is now complete
                 //Given upload destination is currently the jobId
                 JobQueue.RunningTasks -= 1; // Frees up space for the next running executable
-               
-                //Debugging
-                for (int i = 0; i < JobQueue.LeftOnQueue().Length; i++)
-                    //{
-                    //    Debug.WriteLine(JobQueue.LeftOnQueue()[i].ToString());
-                    //}
+                //ResultUpload uploading = new ResultUpload();
+                //uploading.AWSUpload(output, "citizen.science.image.storage.public", job.JobId.ToString());
+                Action b = delegate { UploadQueue.AddToQueue(output, "citizen.science.image.storage.public", job.JobId.ToString()); };
+                b();
+                Debug.WriteLine("Uploaded");
                 JobQueue.AllocateJobs();
-                ResultUpload.AWSUpload(output, "citizen.science.image.storage.public", job.JobId.ToString());
             }
             catch
             {

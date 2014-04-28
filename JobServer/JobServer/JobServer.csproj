@@ -92,6 +92,7 @@
     <Compile Include="App_Code\JobQueue.cs" />
     <Compile Include="App_Code\ResultUpload.cs" />
     <Compile Include="App_Code\StartTask.cs" />
+    <Compile Include="App_Code\UploadQueue.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\DeleteJobController.cs" />
     <Compile Include="Controllers\CreateJobController.cs" />

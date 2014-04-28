@@ -181,13 +181,7 @@ namespace JobServer.Executables
         /// <param name="jobId">Job ID</param>
         public static void RunJob(string fileName, int jobId)
         {
-            
-            
-
-            // Change the number to allow more simultaneously running executables
-            //if (JobQueue.RunningTasks < 4)
-            //{
-                // Threading of tasks
+            // Threading of tasks
             JobQueue.AddToQueue(fileName, jobId);
         }
     }
