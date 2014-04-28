@@ -82,16 +82,20 @@ namespace JobServer.App_Code
                             //Debug.WriteLine("Job Paused");
                         //}
                     }
-                    if (job.Restart)
-                    {
-                        job.Restart = false;
-                        job.Paused = false;
-                        i = 0;
-                        JobQueue.RunningTasks -= 1; //????
-                    }
+                    //if (job.Restart)
+                    //{
+                    //    job.Restart = false;
+                    //    job.Paused = false;
+                    //    i = 0;
+                    //    //JobQueue.RunningTasks -= 1; //????
+                    //}
                     if (job.Stopped)
                     {
-                        JobQueue.RunningTasks -= 1;
+                        if (i > 0) //If i == 0 then RunningTasks hasn't been increased yet
+                        {
+                            JobQueue.RunningTasks -= 1;
+                        }
+                        w.Close();
                         return;
                     }
 
@@ -99,7 +103,7 @@ namespace JobServer.App_Code
                     if (i == 0)
                     {
                         job.Started = true;
-                        JobQueue.RunningTasks += 1;
+                        //JobQueue.RunningTasks += 1;
                     }
                     job.BatchIndex = i; // Helps to give the progress of the code
                     Tuple<string, string> arguments = GlobalQueue.RemoveFromQueue(jobId);
@@ -133,7 +137,7 @@ namespace JobServer.App_Code
                 //uploading.AWSUpload(output, "citizen.science.image.storage.public", job.JobId.ToString());
                 Action b = delegate { UploadQueue.AddToQueue(output, "citizen.science.image.storage.public", job.JobId.ToString()); };
                 b();
-                Debug.WriteLine("Uploaded");
+                Debug.WriteLine("Uploaded:" + jobId);
                 JobQueue.AllocateJobs();
             }
             catch

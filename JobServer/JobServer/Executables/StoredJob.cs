@@ -10,6 +10,7 @@ namespace JobServer.Executables
         public int JobId;
         public int ZipId;
         public string Bucket;
+        public string Command;
         public WorkArray[] Images;
         public bool Started = false;
         public bool Completed = false;
@@ -29,6 +30,7 @@ namespace JobServer.Executables
         {
             JobId = job.JobId;
             ZipId = job.ZipId;
+            Command = job.Command;
             Images = new WorkArray[job.Work.Length];
             job.Work.CopyTo(Images, 0);
         }

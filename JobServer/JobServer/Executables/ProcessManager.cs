@@ -182,6 +182,7 @@ namespace JobServer.Executables
         public static void RunJob(string fileName, int jobId)
         {
             // Threading of tasks
+            Debug.WriteLine("Added " + jobId + " to queue");
             JobQueue.AddToQueue(fileName, jobId);
         }
     }
