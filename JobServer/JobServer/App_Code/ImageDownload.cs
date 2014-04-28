@@ -1,21 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-using JobServer.App_Code;
 using JobServer.Executables;
-using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 
 namespace JobServer.App_Code
 {
+    /// <summary>
+    /// Provides image download functionality for images on AWS.
+    /// </summary>
     public class ImageDownload
     {
+        /// <summary>
+        /// Downloads the images for the specified job.
+        /// </summary>
+        /// <example>  
+        /// This starts an image download task:
+        /// <code> 
+        /// Task.Factory.StartNew(() => new ImageDownload().Download(job, 100));
+        /// </code> 
+        /// </example> 
+        /// <param name="value">The job whose images are to be fetched.</param>
+        /// <param name="limit">Limit on number of images to download.</param>
         public void Download(StoredJob value, int limit)
         {
-
             // Path where images will be stored
             string path = System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data/Jobs/" + value.JobId);
             

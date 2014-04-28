@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-using Amazon;
 using Amazon.S3;
 using Amazon.S3.Model;
 using System.Configuration;
@@ -13,11 +8,20 @@ using System.IO;
 
 namespace JobServer.App_Code
 {
+    /// <summary>
+    /// Static class providing methods to query and access Amazon Web Service storage for the system.
+    /// </summary>
     public class AWS
     {
+        /// <summary>
+        /// The S3 client object.
+        /// </summary>
         static IAmazonS3 client;
 
-        //Checks that the User has properly setup the AWS keys
+        /// <summary>
+        /// Checks that the AWS keys are stored in the configuration settings.
+        /// </summary>
+        /// <returns>Whether or not the keys are present.</returns>
         public static bool checkRequiredFields()
         {
             NameValueCollection appConfig = ConfigurationManager.AppSettings;
@@ -41,8 +45,10 @@ namespace JobServer.App_Code
             return true;
         }
 
-
-        //The standard error used throughout the server when using AWS
+        /// <summary>
+        /// Standardized error handler for S3 exceptions - provides debug output.
+        /// </summary>
+        /// <param name="amazonS3Exception">Exception to handle.</param>
         public static void AWSerror(AmazonS3Exception amazonS3Exception)
         {
             if (amazonS3Exception.ErrorCode != null &&
@@ -57,7 +63,11 @@ namespace JobServer.App_Code
             }
         }
 
-        //Gets the url of a given bucket
+        /// <summary>
+        /// Gets the url of the given item & bucket. This is printed to debug output.
+        /// </summary>
+        /// <param name="key">Key for the item.</param>
+        /// <param name="bucket">Bucket the item is stored in.</param>
         static void GetUrl(string key, string bucket)
         {
             if (checkRequiredFields())
@@ -80,8 +90,13 @@ namespace JobServer.App_Code
             }
         }
 
-
         // Saves an object from the server to a file (currently to App_Data)
+        /// <summary>
+        /// Fetches an item from AWS storage and stores it locally, in App_Data.
+        /// </summary>
+        /// <param name="key">Key of item to fetch.</param>
+        /// <param name="bucket">Bucket to fetch from.</param>
+        /// <param name="id">Job ID - indicates folder to store the response in.</param>
         public static void GetObject(string key, string bucket, int id)
         {
             using (client = Amazon.AWSClientFactory.CreateAmazonS3Client())

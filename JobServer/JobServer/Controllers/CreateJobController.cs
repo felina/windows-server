@@ -49,12 +49,13 @@ namespace JobServer.Controllers
                 Debug.WriteLine("Caching new Job");
                 ProcessManager.AddJob(value);
                 Debug.WriteLine("Job stored");
-                // TODO: Run/queue the job
                 String result = JsonConvert.SerializeObject(new
                     {
                         res = true,
                         jobId = value.JobId
                     });
+
+                // Queue the job
                 Action a = delegate { ProcessManager.RunJob(value.Command, value.JobId); }; //Change to actual name 
                 a();
                 return result;
