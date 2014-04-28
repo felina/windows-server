@@ -104,6 +104,7 @@ namespace JobServer.Controllers
                     return "Job restarted";
                 }
             }
+            return "Option not found";
         }
 
         // TODO: Job control - pause, halt etc
