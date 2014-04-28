@@ -27,7 +27,7 @@ namespace JobServer.App_Code
             RunningTasks = 0;
             ExecutableLimit = 4; //Choose number for number of simultaneously running executables
         }
-
+            
         //Possibly check for running instances of same jobId?
         public static void AddToQueue(string fileName, int jobId)
         {
@@ -60,12 +60,13 @@ namespace JobServer.App_Code
             return TaskQueue.Count;
         }
 
-
+        // Takes a job off of the queue 
         public static Tuple<string, int> RemoveFromQueue()
         {
             return TaskQueue.Dequeue();
         }
 
+        // Returns an array of jobs that are remaining on the queue
         public static int[] LeftOnQueue()
         {
             Tuple<string,int>[] values = TaskQueue.ToArray();
