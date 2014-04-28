@@ -29,7 +29,6 @@ namespace JobServer.Controllers
             StoredJob job = ProcessManager.GetJob(id);
             if (job == null)
             {
-                //POSSIBLY CREATE JOB??
                 return "Job not stored";
             }
             if (job.Completed)
@@ -54,7 +53,6 @@ namespace JobServer.Controllers
             }
             else if (option == "STOP")
             {
-                //NEED TO REMOVE FROM QUEUE
                 Action e = delegate { job.Stopped = true; };
                 e();
                 return "Job Stopped";
@@ -67,8 +65,7 @@ namespace JobServer.Controllers
                 }
                 else
                 {
-                    Debug.WriteLine(job.Command);
-                    Action f = delegate { job.Restart = true; job.Stopped = false; job.Paused = false; ProcessManager.RunJob(job.Command, job.JobId); };
+                    Action f = delegate { job.Stopped = false; job.Paused = false; ProcessManager.RunJob(job.Command, job.JobId); };
                     f();
                     return "Job restarted";
                 }

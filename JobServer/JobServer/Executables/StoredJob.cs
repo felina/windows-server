@@ -16,7 +16,6 @@ namespace JobServer.Executables
         public bool Completed = false;
         public bool Paused = false;
         public bool Stopped = false;
-        public bool Restart = false;
         public int BatchIndex = 0;
         public int? ExitCode = null;
         public string Result = "";

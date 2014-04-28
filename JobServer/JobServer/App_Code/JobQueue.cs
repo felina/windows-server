@@ -45,8 +45,6 @@ namespace JobServer.App_Code
         /// <remarks>Possibly check for running instances of the same JobID?</remarks>
         public static void AddToQueue(string fileName, int jobId)
         {
-            Debug.WriteLine("Job " + jobId + " Recieved");
-            Debug.WriteLine("Running Tasks is " + RunningTasks);
             TaskQueue.Enqueue(new Tuple<string, int>(fileName, jobId));
             AllocateJobs();
         }
@@ -67,7 +65,6 @@ namespace JobServer.App_Code
                     StoredJob job = ProcessManager.GetJob(jobId);
                     if (job.Stopped) //Don't run job if stopped externally.
                     {
-                        //Debug.WriteLine("Trying to run " + jobId);
                         // Because job is stopped don't run the job
                     }
                     else
@@ -75,8 +72,6 @@ namespace JobServer.App_Code
                         RunningTasks += 1;
                         Task.Factory.StartNew(() => new ImageDownload().Download(job, 100)); //Image download limit?
                         Task.Factory.StartNew(() => new StartTask().RunTask(fileName, jobId));
-                        //Task.WaitAll(downloadImages, runningTasks);
-                        //Debug.WriteLine(RunningTasks);
                     }
                 }
             }  

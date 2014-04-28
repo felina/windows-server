@@ -77,18 +77,7 @@ namespace JobServer.App_Code
                     while (GlobalQueue.QueueSize(jobId) == 0 || job.Paused == true)
                     {
                         // Hang till there's stuff on the queue to process
-                        //if (job.Paused == true)
-                        //{
-                            //Debug.WriteLine("Job Paused");
-                        //}
                     }
-                    //if (job.Restart)
-                    //{
-                    //    job.Restart = false;
-                    //    job.Paused = false;
-                    //    i = 0;
-                    //    //JobQueue.RunningTasks -= 1; //????
-                    //}
                     if (job.Stopped)
                     {
                         if (i > 0) //If i == 0 then RunningTasks hasn't been increased yet
@@ -98,12 +87,9 @@ namespace JobServer.App_Code
                         w.Close();
                         return;
                     }
-
-
                     if (i == 0)
                     {
                         job.Started = true;
-                        //JobQueue.RunningTasks += 1;
                     }
                     job.BatchIndex = i; // Helps to give the progress of the code
                     Tuple<string, string> arguments = GlobalQueue.RemoveFromQueue(jobId);
@@ -133,8 +119,6 @@ namespace JobServer.App_Code
                 job.Completed = true; //Signifies that the job is now complete
                 //Given upload destination is currently the jobId
                 JobQueue.RunningTasks -= 1; // Frees up space for the next running executable
-                //ResultUpload uploading = new ResultUpload();
-                //uploading.AWSUpload(output, "citizen.science.image.storage.public", job.JobId.ToString());
                 Action b = delegate { UploadQueue.AddToQueue(output, "citizen.science.image.storage.public", job.JobId.ToString()); };
                 b();
                 Debug.WriteLine("Uploaded:" + jobId);

@@ -22,7 +22,6 @@ namespace JobServer.App_Code
                 TransferUtility fileTransferUtility = new TransferUtility(new AmazonS3Client(Amazon.RegionEndpoint.EUWest1));
                 fileTransferUtility.Upload(filePath, bucketName, keyName + ".csv");
                 Console.WriteLine("Upload Completed");
-                //Debug.WriteLine("Upload Complete");
                 UploadQueue.Upload();
             }
             catch (AmazonS3Exception amazonS3Exception)
