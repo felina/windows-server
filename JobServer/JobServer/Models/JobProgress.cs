@@ -14,6 +14,7 @@ namespace JobServer.Models
         public int JobId { get; set; }
         public bool Started { get; set; }
         public bool Completed { get; set; }
+        public bool Paused { get; set; }
         public float Progress { get; set; }
 
         /// <summary>
@@ -29,6 +30,7 @@ namespace JobServer.Models
 
             progress.Completed = job.Completed;
             progress.Started = job.Started;
+            progress.Paused = job.Paused;
 
             if (job.Completed) progress.Progress = 1;
             else

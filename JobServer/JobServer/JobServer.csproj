@@ -100,6 +100,7 @@
     <Compile Include="Controllers\JobController.cs" />
     <Compile Include="Controllers\JobProgressController.cs" />
     <Compile Include="Controllers\JobQueueController.cs" />
+    <Compile Include="Controllers\PauseJobController.cs" />
     <Compile Include="Executables\JobResultsController.cs" />
     <Compile Include="Executables\ProcessManager.cs" />
     <Compile Include="Executables\StoredJob.cs" />

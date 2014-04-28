@@ -62,10 +62,28 @@ namespace JobServer.App_Code
             {
                 for (int i = 0; i < Images.Length; i++)
                 {
-                    while (GlobalQueue.QueueSize(jobId) == 0)
+                    while (GlobalQueue.QueueSize(jobId) == 0 || job.Paused == true)
                     {
                         // Hang till there's stuff on the queue to process
+                        //if (job.Paused == true)
+                        //{
+                            //Debug.WriteLine("Job Paused");
+                        //}
                     }
+                    if (job.Restart)
+                    {
+                        job.Restart = false;
+                        job.Paused = false;
+                        i = 0;
+                        JobQueue.RunningTasks -= 1; //????
+                    }
+                    if (job.Stopped)
+                    {
+                        JobQueue.RunningTasks -= 1;
+                        return;
+                    }
+
+
                     if (i == 0)
                     {
                         job.Started = true;

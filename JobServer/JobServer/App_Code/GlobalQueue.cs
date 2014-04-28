@@ -44,6 +44,9 @@ namespace JobServer.App_Code
         // Removes a vlue from a queue depending on the jobId. Once taken 
         // off the queue the images are used as command line arguments to the
         // executable.
+
+
+        //Make sure that job exits before running job, not sure how this is working with delete job
         public static Tuple<string, string> RemoveFromQueue(int jobId)
         {
             if (!DictQueue.ContainsKey(jobId))
