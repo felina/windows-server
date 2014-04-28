@@ -25,7 +25,7 @@ namespace JobServer.App_Code
         {
             TaskQueue = new Queue<Tuple<string,int>>();
             RunningTasks = 0;
-            ExecutableLimit = 4; //Choose number for number of simultaneously running executables
+            ExecutableLimit = 1; //Choose number for number of simultaneously running executables
         }
             
         //Possibly check for running instances of same jobId?
