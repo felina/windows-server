@@ -20,57 +20,92 @@ namespace JobServer.Controllers
         // POST api/job
         public string Post([FromBody] JobControl value)
         {
+            String result;
             if (value == null)
             {
-                return "Invalid request";
+                result = JsonConvert.SerializeObject(new
+                {
+                    res = true,
+                    message = "Invalid request"
+                });
+                return result;
             }
             int id = value.JobId;
             string option = value.Option;
             StoredJob job = ProcessManager.GetJob(id);
             if (job == null)
             {
-                return "Job not stored";
+                result = JsonConvert.SerializeObject(new
+                {
+                    res = false,
+                    message = "Job not stored"
+                });
             }
             if (job.Completed)
             {
-                return "Job already completed";
+                result = JsonConvert.SerializeObject(new
+                {
+                    res = false,
+                    message = "Job already completed"
+                });
             }
             if (!job.Started)
             {
-                return "Job not started";
+                result = JsonConvert.SerializeObject(new
+                {
+                    res = false,
+                    message = "Job not started"
+                });
             }
             if (option == "PAUSE")
             {
                 Action c = delegate { job.Paused = true; }; //Pause the job here, if already paused do nothing
                 c();
-                return "Job Paused";
+                result = JsonConvert.SerializeObject(new
+                {
+                    res = true,
+                    message = "Job Paused"
+                });
             }
             else if (option == "RESUME")
             {
                 Action d = delegate { job.Paused = false; };
                 d();
-                return "Job Resumed";
+                result = JsonConvert.SerializeObject(new
+                {
+                    res = true,
+                    message = "Job Resumed"
+                });
             }
             else if (option == "STOP")
             {
                 Action e = delegate { job.Stopped = true; };
                 e();
-                return "Job Stopped";
+                result = JsonConvert.SerializeObject(new
+                {
+                    res = true,
+                    message = "Job Stopped"
+                });
             }
             else if (option == "RESTART")
             {
-                if (job.Completed)
+                Action f = delegate { job.Stopped = false; job.Paused = false; ProcessManager.RunJob(job.Command, job.JobId); };
+                f();
+                result = JsonConvert.SerializeObject(new
                 {
-                    return "Job already completed";
-                }
-                else
-                {
-                    Action f = delegate { job.Stopped = false; job.Paused = false; ProcessManager.RunJob(job.Command, job.JobId); };
-                    f();
-                    return "Job restarted";
-                }
+                    res = true,
+                    message = "Job restarted"
+                });
             }
-            return "Option not found";
+            else
+            {
+                result = JsonConvert.SerializeObject(new
+                {
+                    res = false,
+                    message = "Option not found"
+                });
+            }
+            return result;
         }
     }
 }

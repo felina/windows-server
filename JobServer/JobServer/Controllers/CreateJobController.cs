@@ -35,12 +35,18 @@ namespace JobServer.Controllers
         /// <param name="value">JSON representing job</param>
         /// <returns>JSON Response indicating success</returns>
         public string Post([FromBody]Job value)
-        {       
+        {
+            string result;
             // Check our input
             if (value == null)
             {
-                Debug.WriteLine("CreateJob POST: Nothing recieved");
-                return "Invalid or missing job definition";
+                //Debug.WriteLine("CreateJob POST: Nothing recieved");
+                result = JsonConvert.SerializeObject(new
+                {
+                    res = false,
+                    message = "Invalid or missing job definition"
+                });
+                return result;
             }
 
             // Check for existing job
@@ -49,7 +55,7 @@ namespace JobServer.Controllers
                 Debug.WriteLine("Caching new Job");
                 ProcessManager.AddJob(value);
                 Debug.WriteLine("Job stored");
-                String result = JsonConvert.SerializeObject(new
+                result = JsonConvert.SerializeObject(new
                     {
                         res = true,
                         jobId = value.JobId
@@ -62,7 +68,7 @@ namespace JobServer.Controllers
             }
             else
             {
-                String result = JsonConvert.SerializeObject(new
+                result = JsonConvert.SerializeObject(new
                     {
                         res = false,
                         message = "Job already Cached"

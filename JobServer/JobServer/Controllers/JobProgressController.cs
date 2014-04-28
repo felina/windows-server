@@ -18,25 +18,29 @@ namespace JobServer.Controllers
         /// <returns>JSON Response</returns>
         public string Get(int id)
         {
+            string result;
             if (ProcessManager.JobCached(id))
             {
                 StoredJob job = ProcessManager.GetJob(id);
                 JobProgress jobProgress = JobProgress.CreateFromStored(job);
-                //return Ok(JobProgress.CreateFromStored(ProcessManager.GetJob(id)));
-                String result = JsonConvert.SerializeObject(new
+                result = JsonConvert.SerializeObject(new
                 {
+                    res = true,
                     jobId = id,
                     Started = jobProgress.Started,
                     Completed = jobProgress.Completed,
                     Progress = jobProgress.Progress
                 });
-                //return Ok("New job " + value.JobId + " stored");
-                return result;
             }
             else
             {
-                return "Job doesn't exist on server"; //res false?
+                result = JsonConvert.SerializeObject(new
+                {
+                    res = false,
+                    message = "Job doesn't exist on server"
+                });
             }
+            return result;
         }
     }
 }

@@ -7,6 +7,11 @@ using System.Web.Http;
 
 namespace JobServer.Controllers
 {
+
+    //NEED TO DELETE WHOLE CLASS BECAUSE ONLY USED FOR TESTING!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
     public class EchoController : ApiController
     {
         // GET api/echo
