@@ -53,6 +53,7 @@ namespace JobServer.Executables
 
         /// <summary>
         /// Removes a job from memory and the cache. Aborts if the job is running, or if it isn't cached.
+        /// If the job is queued, the execution will be aborted when it reaches the front of the queue.
         /// </summary>
         /// <param name="id">ID of job to remove</param>
         /// <returns>Whether the job was removed</returns>
@@ -78,8 +79,6 @@ namespace JobServer.Executables
                 }
 
                 Jobs.Remove(id);
-
-                // TODO: Remove from queue if present
             }
 
             // Remove from cache

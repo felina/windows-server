@@ -124,9 +124,9 @@ namespace JobServer.App_Code
                 Debug.WriteLine("Uploaded:" + jobId);
                 JobQueue.AllocateJobs();
             }
-            catch
+            catch (Exception e)
             {
-                // TODO: Log error
+                Debug.WriteLine("Job execution failed: " + e.Message);
             }
         }
     }
