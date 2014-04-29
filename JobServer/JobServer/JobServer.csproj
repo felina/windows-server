@@ -96,7 +96,6 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\DeleteJobController.cs" />
     <Compile Include="Controllers\CreateJobController.cs" />
-    <Compile Include="Controllers\EchoController.cs" />
     <Compile Include="Controllers\JobController.cs" />
     <Compile Include="Controllers\JobProgressController.cs" />
     <Compile Include="Controllers\JobQueueController.cs" />

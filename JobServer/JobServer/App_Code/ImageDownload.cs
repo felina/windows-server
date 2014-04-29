@@ -21,7 +21,7 @@ namespace JobServer.App_Code
         /// </example> 
         /// <param name="value">The job whose images are to be fetched.</param>
         /// <param name="limit">Limit on number of images to download.</param>
-        public void Download(StoredJob value, int limit)
+        public void Download(StoredJob value)
         {
             // Path where images will be stored
             string path = System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data/Jobs/" + value.JobId);
@@ -30,7 +30,7 @@ namespace JobServer.App_Code
             if (Directory.Exists(path))
             {
                 string work = System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data/Jobs/" + value.JobId);
-                for (int i = 0; i < value.Images.Length && i < limit; i++)
+                for (int i = 0; i < value.Images.Length; i++)
                 {
                     //Downloads the images from AWS Concurrently and saves to directory in which job is stored
                     Task image1 = Task.Factory.StartNew(() => AWS.GetObject(value.Images[i].Image1.Key, value.Images[i].Image1.Bucket, value.JobId));
