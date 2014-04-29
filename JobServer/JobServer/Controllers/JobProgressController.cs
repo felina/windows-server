@@ -15,7 +15,7 @@ namespace JobServer.Controllers
         /// GET api/jobprogress/id. Returns a JSON response indicating the job's progress.
         /// </summary>
         /// <param name="id">Job ID</param>
-        /// <returns>JSON Response</returns>
+        /// <returns>JSON JobProgress response</returns>
         public JobProgress Get(int id)
         {
             if (ProcessManager.JobCached(id))

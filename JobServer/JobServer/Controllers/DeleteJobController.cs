@@ -1,6 +1,7 @@
 ﻿using JobServer.Executables;
 using Newtonsoft.Json;
 using System.Web.Http;
+using JobServer.Models;
 
 namespace JobServer.Controllers
 {
@@ -14,23 +15,15 @@ namespace JobServer.Controllers
         /// </summary>
         /// <param name="id">Job ID</param>
         /// <returns>JSON Response ('res' indicates success or failure)</returns>
-        public string Get(int id)
+        public GenericResponse Get(int id)
         {
             if (ProcessManager.RemoveJob(id))
             {
-                return JsonConvert.SerializeObject(new
-                    {
-                        res = true,
-                        jobId = id
-                    });
+                return GenericResponse.Success(id);
             }
             else
             {
-                return JsonConvert.SerializeObject(new
-                    {
-                        res = false,
-                        message = "Unable to delete job"
-                    });
+                return GenericResponse.Failure("Unable to delete job");
             }
         }
     }

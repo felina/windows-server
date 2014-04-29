@@ -34,19 +34,12 @@ namespace JobServer.Controllers
         /// </summary>
         /// <param name="value">JSON representing job</param>
         /// <returns>JSON Response indicating success</returns>
-        public string Post([FromBody]Job value)
+        public GenericResponse Post([FromBody]Job value)
         {
-            string result;
             // Check our input
             if (value == null)
             {
-                //Debug.WriteLine("CreateJob POST: Nothing recieved");
-                result = JsonConvert.SerializeObject(new
-                {
-                    res = false,
-                    message = "Invalid or missing job definition"
-                });
-                return result;
+                return GenericResponse.Failure("Invalid or missing job definition");
             }
 
             // Check for existing job
@@ -55,25 +48,15 @@ namespace JobServer.Controllers
                 Debug.WriteLine("Caching new Job");
                 ProcessManager.AddJob(value);
                 Debug.WriteLine("Job stored");
-                result = JsonConvert.SerializeObject(new
-                    {
-                        res = true,
-                        jobId = value.JobId
-                    });
 
                 // Queue the job
                 Action a = delegate { JobQueue.AddToQueue(value.Command, value.JobId); }; //Change to actual name 
                 a();
-                return result;
+                return GenericResponse.Success(value.JobId);
             }
             else
             {
-                result = JsonConvert.SerializeObject(new
-                    {
-                        res = false,
-                        message = "Job already Cached"
-                    });
-                return result;
+                return GenericResponse.Failure("Job already cached");
             }
         }
 

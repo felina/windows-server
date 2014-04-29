@@ -13,10 +13,10 @@ namespace JobServer.Controllers
         /// GET api/jobqueue. Returns a JSON response containing an array of JobIDs left on the execution Queue.
         /// </summary>
         /// <returns>Array of JobIDs on the execution Queue.</returns>
-        public string Get()
+        public int[] Get()
         {
             int[] remaining = JobQueue.LeftOnQueue();
-            return JsonConvert.SerializeObject(remaining);
+            return remaining;
         }
     }
 }

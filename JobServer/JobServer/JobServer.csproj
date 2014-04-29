@@ -99,17 +99,16 @@
     <Compile Include="Controllers\JobController.cs" />
     <Compile Include="Controllers\JobProgressController.cs" />
     <Compile Include="Controllers\JobQueueController.cs" />
-    <Compile Include="Executables\JobResultsController.cs" />
     <Compile Include="Executables\ProcessManager.cs" />
     <Compile Include="Executables\StoredJob.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\GenericResponse.cs" />
     <Compile Include="Models\JobControl.cs" />
     <Compile Include="Models\Work.cs" />
     <Compile Include="Models\Job.cs" />
     <Compile Include="Models\JobProgress.cs" />
-    <Compile Include="Models\JobResult.cs" />
     <Compile Include="Models\WorkArray.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

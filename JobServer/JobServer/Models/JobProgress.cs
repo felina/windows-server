@@ -3,15 +3,15 @@
 namespace JobServer.Models
 {
     /// <summary>
-    /// Describes the progress of a job
+    /// Describes the progress of a job.
     /// </summary>
     public class JobProgress
     {
-        public int JobId { get; set; }
-        public bool Started { get; set; }
-        public bool Completed { get; set; }
-        public bool Paused { get; set; }
-        public float Progress { get; set; }
+        public int? JobId { get; set; }
+        public bool? Started { get; set; }
+        public bool? Completed { get; set; }
+        public bool? Paused { get; set; }
+        public float? Progress { get; set; }
 
         public bool res { get; set; }
         public string message { get; set; }
@@ -38,13 +38,13 @@ namespace JobServer.Models
             }
 
             progress.res = true;
-            progress.message = "Success";
 
             return progress;
         }
 
         /// <summary>
-        /// Creates a progress report object indicating failure, with the specified message
+        /// Creates a progress report object indicating failure, with the specified message.
+        /// Other fields are null.
         /// </summary>
         /// <param name="message">Message to report</param>
         /// <returns>New JobProgress object</returns>

@@ -7,67 +7,53 @@ using System.Web.Http;
 
 namespace JobServer.Controllers
 {
+    /// <summary>
+    /// Provides api endpoints for stopping, pausing, resuming and restarting jobs.
+    /// </summary>
     public class JobController : ApiController
     {
-        // POST api/job
-        public string Post([FromBody] JobControl value)
+        /// <summary>
+        /// POST api/job
+        /// </summary>
+        /// <param name="value">Job model object input</param>
+        /// <returns>JSON GenericResponse indicating success or failure</returns>
+        public GenericResponse Post([FromBody] JobControl value)
         {
-            String result;
             if (value == null)
             {
-                result = JsonConvert.SerializeObject(new
-                {
-                    res = true,
-                    message = "Invalid request"
-                });
-                return result;
+                return GenericResponse.Failure("Invalid request");
             }
+
             int id = value.JobId;
             string option = value.Option;
             StoredJob job = ProcessManager.GetJob(id);
+
             if (job == null)
             {
-                result = JsonConvert.SerializeObject(new
-                {
-                    res = false,
-                    message = "Job not stored"
-                });
+                return GenericResponse.Failure("Job not stored");
             }
+
             if (job.Completed)
             {
-                result = JsonConvert.SerializeObject(new
-                {
-                    res = false,
-                    message = "Job already completed"
-                });
+                return GenericResponse.Failure("Job already completed");
             }
+
             if (!job.Started)
             {
-                result = JsonConvert.SerializeObject(new
-                {
-                    res = false,
-                    message = "Job not started"
-                });
+                return GenericResponse.Failure("Job not started");
             }
+
             if (option == "PAUSE")
             {
                 Action c = delegate { job.Paused = true; }; //Pause the job here, if already paused do nothing
                 c();
-                result = JsonConvert.SerializeObject(new
-                {
-                    res = true,
-                    message = "Job Paused"
-                });
+                return GenericResponse.Success(value.JobId);
             }
             else if (option == "RESUME")
             {
                 Action d = delegate { job.Paused = false; };
                 d();
-                result = JsonConvert.SerializeObject(new
-                {
-                    res = true,
-                    message = "Job Resumed"
-                });
+                return GenericResponse.Success();
             }
             else if (option == "STOP")
             {
@@ -79,31 +65,20 @@ namespace JobServer.Controllers
                     }
                 };
                 e();
-                result = JsonConvert.SerializeObject(new
-                {
-                    res = true,
-                    message = "Job Stopped"
-                });
+
+                return GenericResponse.Success();
             }
             else if (option == "RESTART")
             {
                 Action f = delegate { job.Stopped = false; job.Paused = false; JobQueue.AddToQueue(job.Command, job.JobId); };
                 f();
-                result = JsonConvert.SerializeObject(new
-                {
-                    res = true,
-                    message = "Job restarted"
-                });
+
+                return GenericResponse.Success();
             }
             else
             {
-                result = JsonConvert.SerializeObject(new
-                {
-                    res = false,
-                    message = "Option not found"
-                });
+                return GenericResponse.Failure("Option does not exist");
             }
-            return result;
         }
     }
 }
