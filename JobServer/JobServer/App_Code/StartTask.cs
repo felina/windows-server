@@ -1,11 +1,8 @@
 ﻿using JobServer.Executables;
 using JobServer.Models;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Web;
 
 namespace JobServer.App_Code
 {
@@ -110,8 +107,13 @@ namespace JobServer.App_Code
                         job.ExitCode = job.exeProcess.ExitCode;
 
                         //Write to csv files
-                        var first = Images[i].Image1.Key;
-                        var second = Images[i].Image2.Key;
+                        string first = Images[i].Image1.Key;
+                        string second = Images[i].Image2.Key;
+                        //Check that there are no commas in strings otherwise cause error
+                        String[] strOutArray = strOut.Split(',');
+                        String[] strErrArray = strErr.Split(',');
+                        strOut = String.Join("", strOutArray);
+                        strErr = String.Join("", strErrArray);
                         line = string.Format("{0},{1},{2},{3}", first, second, strOut, strErr).Trim();
                         w.WriteLine(line);
                         w.Flush();

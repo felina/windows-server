@@ -1,8 +1,8 @@
-﻿using System;
-using Amazon.S3;
+﻿using Amazon.S3;
 using Amazon.S3.Model;
-using System.Configuration;
+using System;
 using System.Collections.Specialized;
+using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 

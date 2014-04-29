@@ -1,6 +1,6 @@
-﻿using System.Web.Http;
-using JobServer.App_Code;
+﻿using JobServer.App_Code;
 using Newtonsoft.Json;
+using System.Web.Http;
 
 namespace JobServer.Controllers
 {

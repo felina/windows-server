@@ -1,5 +1,5 @@
-﻿using JobServer.Models;
-using JobServer.Executables;
+﻿using JobServer.Executables;
+using JobServer.Models;
 using System.Web.Http;
 
 namespace JobServer.Controllers
