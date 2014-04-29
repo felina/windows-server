@@ -171,18 +171,5 @@ namespace JobServer.Executables
             // Checks server hard drive for the executable
             return System.IO.Directory.Exists(HttpContext.Current.Server.MapPath("~/App_Data/Jobs/"+id));
         }
-
-        /// <summary>
-        /// Queues the Job for execution on the command line. Results and progress are available
-        /// from its StoredJob object.
-        /// </summary>
-        /// <param name="fileName">Name of the executable in the Job's .zip</param>
-        /// <param name="jobId">Job ID</param>
-        public static void RunJob(string fileName, int jobId)
-        {
-            // Threading of tasks
-            Debug.WriteLine("Added " + jobId + " to queue");
-            JobQueue.AddToQueue(fileName, jobId);
-        }
     }
 }

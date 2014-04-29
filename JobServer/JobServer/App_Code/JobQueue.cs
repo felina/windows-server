@@ -63,14 +63,14 @@ namespace JobServer.App_Code
                     string fileName = values.Item1;
                     int jobId = values.Item2;
                     StoredJob job = ProcessManager.GetJob(jobId);
-                    if (job.Stopped) //Don't run job if stopped externally.
+                    if (job == null || job.Stopped) //Don't run job if stopped externally.
                     {
                         // Because job is stopped don't run the job
                     }
                     else
                     {
                         RunningTasks += 1;
-                        Task.Factory.StartNew(() => new ImageDownload().Download(job, 100)); //Image download limit?
+                        Task.Factory.StartNew(() => new ImageDownload().Download(job));
                         Task.Factory.StartNew(() => new StartTask().RunTask(fileName, jobId));
                     }
                 }

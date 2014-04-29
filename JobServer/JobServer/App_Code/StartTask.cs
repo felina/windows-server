@@ -77,6 +77,8 @@ namespace JobServer.App_Code
                     while (GlobalQueue.QueueSize(jobId) == 0 || job.Paused == true)
                     {
                         // Hang till there's stuff on the queue to process
+
+                        //Add sleep or wait
                     }
                     if (job.Stopped)
                     {
@@ -85,10 +87,12 @@ namespace JobServer.App_Code
                             JobQueue.RunningTasks -= 1;
                         }
                         w.Close();
+                        //Maybe clean job of system
                         return;
                     }
                     if (i == 0)
                     {
+                        Debug.WriteLine("Job + " + job.JobId + " started");
                         job.Started = true;
                     }
                     job.BatchIndex = i; // Helps to give the progress of the code

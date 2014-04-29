@@ -86,7 +86,7 @@ namespace JobServer.Controllers
             }
             else if (option == "RESTART")
             {
-                Action f = delegate { job.Stopped = false; job.Paused = false; ProcessManager.RunJob(job.Command, job.JobId); };
+                Action f = delegate { job.Stopped = false; job.Paused = false; JobQueue.AddToQueue(job.Command, job.JobId); };
                 f();
                 result = JsonConvert.SerializeObject(new
                 {

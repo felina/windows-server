@@ -62,7 +62,7 @@ namespace JobServer.Controllers
                     });
 
                 // Queue the job
-                Action a = delegate { ProcessManager.RunJob(value.Command, value.JobId); }; //Change to actual name 
+                Action a = delegate { JobQueue.AddToQueue(value.Command, value.JobId); }; //Change to actual name 
                 a();
                 return result;
             }
