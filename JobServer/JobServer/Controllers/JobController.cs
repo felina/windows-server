@@ -70,7 +70,13 @@ namespace JobServer.Controllers
             }
             else if (option == "STOP")
             {
-                Action e = delegate { job.Stopped = true; };
+                Action e = delegate {
+                    job.Stopped = true;
+                    if (job.exeProcess != null && !job.exeProcess.HasExited)
+                    {
+                        job.exeProcess.Kill();
+                    }
+                };
                 e();
                 result = JsonConvert.SerializeObject(new
                 {

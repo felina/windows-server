@@ -66,7 +66,7 @@ namespace JobServer.App_Code
 
             //Set up header for file
             var w = new StreamWriter(output);
-            var line = string.Format("{0},{1},{2}", "Image1", "Image2", "Result");
+            var line = string.Format("{0},{1},{2},{3}", "Image1", "Image2", "Result", "Errors");
             w.WriteLine(line);
             w.Flush();
 
@@ -96,21 +96,19 @@ namespace JobServer.App_Code
                     // Generate the image arguments
                     startInfo.Arguments = arguments.Item1 + " " + arguments.Item2 + " ";
 
-                    using (Process exeProcess = Process.Start(startInfo))
+                    using (job.exeProcess = Process.Start(startInfo))
                     {
-                        string strOut = exeProcess.StandardOutput.ReadToEnd();
-                        string strErr = exeProcess.StandardError.ReadToEnd();
-                        exeProcess.WaitForExit();
+                        string strOut = job.exeProcess.StandardOutput.ReadToEnd();
+                        string strErr = job.exeProcess.StandardError.ReadToEnd();
+                        job.exeProcess.WaitForExit();
 
                         // Save the results
-                        job.Result = strOut;
-                        job.Errors = strErr;
-                        job.ExitCode = exeProcess.ExitCode;
+                        job.ExitCode = job.exeProcess.ExitCode;
 
                         //Write to csv files
                         var first = Images[i].Image1.Key;
                         var second = Images[i].Image2.Key;
-                        line = string.Format("{0},{1},{2}", first, second, job.Result).Trim();
+                        line = string.Format("{0},{1},{2},{3}", first, second, strOut, strErr).Trim();
                         w.WriteLine(line);
                         w.Flush();
                     }

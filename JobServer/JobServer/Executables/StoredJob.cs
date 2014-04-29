@@ -1,4 +1,5 @@
 ﻿using JobServer.Models;
+using System.Diagnostics;
 
 namespace JobServer.Executables
 {
@@ -18,8 +19,7 @@ namespace JobServer.Executables
         public bool Stopped = false;
         public int BatchIndex = 0;
         public int? ExitCode = null;
-        public string Result = "";
-        public string Errors = "";
+        public Process exeProcess = null;
 
         /// <summary>
         /// Copies a Job Model object's parameters to a new StoredJob object

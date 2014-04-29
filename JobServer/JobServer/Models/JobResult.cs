@@ -10,8 +10,6 @@ namespace JobServer.Models
         public int JobId { get; set; }
         public WorkArray[] Images { get; set; }
         public int? ExitCode { get; set; }
-        public string Result { get; set; }
-        public string Errors { get; set; }
 
         /// <summary>
         /// Creates a new Job Result object reporting the results of a given job
@@ -27,8 +25,6 @@ namespace JobServer.Models
 
             result.JobId = job.JobId;
             result.ExitCode = job.ExitCode;
-            result.Result = job.Result;
-            result.Errors = job.Errors;
 
             return result;
         }

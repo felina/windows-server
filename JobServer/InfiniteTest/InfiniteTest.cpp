@@ -10,6 +10,7 @@ using namespace std;
 int main(int argc, char argv[])
 {
 	cout << "Started an infinite loop" << endl;
+	cerr << "IAMA_ERROR_AMA" << endl;
 	while (true) {
 		Sleep(500);
 	}
