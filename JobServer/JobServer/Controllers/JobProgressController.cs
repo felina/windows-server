@@ -2,6 +2,7 @@
 using JobServer.Models;
 using Newtonsoft.Json;
 using System.Web.Http;
+using System.Web;
 
 namespace JobServer.Controllers
 {
@@ -15,31 +16,17 @@ namespace JobServer.Controllers
         /// </summary>
         /// <param name="id">Job ID</param>
         /// <returns>JSON Response</returns>
-        public string Get(int id)
+        public JobProgress Get(int id)
         {
-            string result;
             if (ProcessManager.JobCached(id))
             {
                 StoredJob job = ProcessManager.GetJob(id);
-                JobProgress jobProgress = JobProgress.CreateFromStored(job);
-                result = JsonConvert.SerializeObject(new
-                {
-                    res = true,
-                    jobId = id,
-                    Started = jobProgress.Started,
-                    Completed = jobProgress.Completed,
-                    Progress = jobProgress.Progress
-                });
+                return JobProgress.CreateFromStored(job);
             }
             else
             {
-                result = JsonConvert.SerializeObject(new
-                {
-                    res = false,
-                    message = "Job doesn't exist on server"
-                });
+                return JobProgress.CreateFailResponse("Job not found");
             }
-            return result;
         }
     }
 }

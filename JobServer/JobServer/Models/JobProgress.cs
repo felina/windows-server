@@ -13,6 +13,9 @@ namespace JobServer.Models
         public bool Paused { get; set; }
         public float Progress { get; set; }
 
+        public bool res { get; set; }
+        public string message { get; set; }
+
         /// <summary>
         /// Creates a Progress report object from a given StoredJob object
         /// </summary>
@@ -34,7 +37,26 @@ namespace JobServer.Models
                 progress.Progress = (float)job.BatchIndex / (float)job.Images.Length;
             }
 
+            progress.res = true;
+            progress.message = "Success";
+
             return progress;
         }
+
+        /// <summary>
+        /// Creates a progress report object indicating failure, with the specified message
+        /// </summary>
+        /// <param name="message">Message to report</param>
+        /// <returns>New JobProgress object</returns>
+        public static JobProgress CreateFailResponse(string message)
+        {
+            JobProgress progress = new JobProgress();
+
+            progress.res = false;
+            progress.message = message;
+
+            return progress;
+        }
+
     }
 }
