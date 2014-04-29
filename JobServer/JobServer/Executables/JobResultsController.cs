@@ -10,12 +10,6 @@ namespace JobServer.Controllers
     public class JobResultsController : ApiController
     {
 
-        /*public IEnumerable<JobResult> GetAllResults()
-        {
-            JobResult[] results = new JobResult[ProcessManager.Jobs.Count];
-            // TODO... ?
-        }*/
-
         /// <summary>
         /// GET api/jobresults/id. Returns a JSON JobResult object describing
         /// the job's results, or an error message.
@@ -32,7 +26,6 @@ namespace JobServer.Controllers
                     return "Job not completed";
                 }
                 var result = JobResult.CreateFromStored(ProcessManager.GetJob(id));
-                //return Ok(result);
                 return "OK";
             }
             else

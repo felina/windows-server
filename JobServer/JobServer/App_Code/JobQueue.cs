@@ -34,7 +34,7 @@ namespace JobServer.App_Code
         {
             TaskQueue = new Queue<Tuple<string,int>>();
             RunningTasks = 0;
-            ExecutableLimit = 1; //Choose number for number of simultaneously running executables
+            ExecutableLimit = 4; //Choose number for number of simultaneously running executables
         }
 
         /// <summary>
