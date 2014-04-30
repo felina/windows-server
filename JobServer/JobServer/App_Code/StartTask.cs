@@ -41,6 +41,7 @@ namespace JobServer.App_Code
             StoredJob job = ProcessManager.GetJob(jobId);
             WorkArray[] Images = job.Images;
             string filePath = System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data/Jobs/" + jobId + "/Extracted/" + fileName);
+            string ImagePath = System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data/Jobs/" + jobId + "/Images/");
             string output = System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data/Jobs/" + jobId + "/results.csv");
 
             // Validate each image
@@ -95,8 +96,8 @@ namespace JobServer.App_Code
                     job.BatchIndex = i; // Helps to give the progress of the code
                     Tuple<string, string> arguments = GlobalQueue.RemoveFromQueue(jobId);
                     // Generate the image arguments
-                    startInfo.Arguments = arguments.Item1 + " " + arguments.Item2 + " ";
-
+                    startInfo.Arguments = ImagePath + arguments.Item1 + " " + ImagePath + arguments.Item2 + " ";
+                    
                     using (job.exeProcess = Process.Start(startInfo))
                     {
                         string strOut = job.exeProcess.StandardOutput.ReadToEnd();
