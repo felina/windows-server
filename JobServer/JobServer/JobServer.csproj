@@ -114,6 +114,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+    <None Include="Properties\PublishProfiles\AWS-API.pubxml" />
     <None Include="Properties\PublishProfiles\LocalServer.pubxml" />
     <None Include="Properties\PublishProfiles\TestFSPublish.pubxml" />
     <None Include="Properties\PublishProfiles\TestPublish.pubxml" />
