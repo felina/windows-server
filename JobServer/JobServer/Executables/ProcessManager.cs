@@ -1,4 +1,7 @@
-﻿using JobServer.Controllers;
+﻿using Amazon.S3;
+using Amazon.S3.Model;
+using JobServer.App_Code;
+using JobServer.Controllers;
 using JobServer.Models;
 using System;
 using System.Collections.Generic;
@@ -14,6 +17,8 @@ namespace JobServer.Executables
     /// </summary>
     public class ProcessManager
     {
+        static IAmazonS3 client;
+
         /// <summary>
         /// Dictionary (map) of loaded jobs 
         /// </summary>
@@ -43,7 +48,7 @@ namespace JobServer.Executables
             {
                 //Save the files to the windows server, some error checking. Make sure that Jobs is alway uptodate with what is actually
                 // on the server    
-                CreateJobController.CacheJob(job);
+                CacheJob(job);
                 
                 // Load the job info into memory
                 Jobs[job.JobId] = new StoredJob(job);
@@ -169,6 +174,77 @@ namespace JobServer.Executables
         {
             // Checks server hard drive for the executable
             return System.IO.Directory.Exists(HttpContext.Current.Server.MapPath("~/App_Data/Jobs/"+id));
+        }
+
+
+        /// <summary>
+        /// <para>
+        /// Retrieves the Job's .zip from AWS and extracts it to the App_Data/Jobs directory under the jobId.
+        /// The job's Work allocation is also stored here as a text file.
+        /// </para>
+        /// <para>
+        /// Jobs cached in this way can later be retrieved - the ProcessManager does this automatically
+        /// when a job cannot be found in memory.
+        /// </para>
+        /// </summary>
+        /// <param name="job">Job Model object to cache</param>
+        public static void CacheJob(Job job)
+        {
+            if (!AWS.checkRequiredFields()) return;
+
+            int key = job.ZipId;
+            int jobId = job.JobId;
+
+            using (client = Amazon.AWSClientFactory.CreateAmazonS3Client())
+            {
+                try
+                {
+                    Debug.WriteLine("Should be recieving");
+                    GetObjectRequest request = new GetObjectRequest()
+                    {
+                        BucketName = "citizen.science.executable.storage",
+                        Key = key.ToString() + ".zip"
+                    };
+                    using (GetObjectResponse response = client.GetObject(request))
+                    {
+                        string root = HttpContext.Current.Server.MapPath("~/App_Data/Jobs/" + jobId); //Specify here where to save executables
+                        string dest = Path.Combine(root, key.ToString() + ".zip");
+                        if (!File.Exists(dest))
+                        {
+                            response.WriteResponseStreamToFile(dest);
+                        }
+                        try
+                        {
+                            String zipPath = Path.Combine(HttpRuntime.AppDomainAppPath, "App_Data/Jobs/" + jobId + "/" + key + ".zip");
+                            String extractPath = Path.Combine(HttpRuntime.AppDomainAppPath, "App_Data/Jobs/" + jobId + "/Extracted");
+                            System.IO.Compression.ZipFile.ExtractToDirectory(zipPath, extractPath);
+                        }
+                        catch
+                        {
+                            Debug.WriteLine("Executable already exists on server");
+                        }
+                    }
+
+                    // Store the "work" for the job
+                    string path = Path.Combine(HttpRuntime.AppDomainAppPath, "App_Data/Jobs/" + jobId + "/work.txt");
+                    string[] images = new string[job.Work.Length * 2];
+
+                    for (int i = 0; i < job.Work.Length; i++)
+                    {
+                        Work w = job.Work[i].Image1;
+                        Work w2 = job.Work[i].Image2;
+
+                        images[i * 2] = w.Key + " " + w.Bucket;
+                        images[i * 2 + 1] = w2.Key + " " + w2.Bucket;
+                    }
+
+                    System.IO.File.WriteAllLines(path, images);
+                }
+                catch (AmazonS3Exception amazonS3Exception)
+                {
+                    AWS.AWSerror(amazonS3Exception);
+                }
+            }
         }
     }
 }

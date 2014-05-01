@@ -13,9 +13,10 @@ namespace JobServer.Controllers
     public class JobController : ApiController
     {
         /// <summary>
-        /// POST api/job
+        /// <para>POST api/job</para>
+        /// <para></para>
         /// </summary>
-        /// <param name="value">Job model object input</param>
+        /// <param name="value">JobControl model object input</param>
         /// <returns>JSON GenericResponse indicating success or failure</returns>
         public GenericResponse Post([FromBody] JobControl value)
         {

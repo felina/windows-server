@@ -15,7 +15,7 @@ namespace JobServer.Controllers
         /// </summary>
         /// <param name="id">Job ID</param>
         /// <returns>JSON Response ('res' indicates success or failure)</returns>
-        public GenericResponse Get(int id)
+        /*public GenericResponse Get(int id)
         {
             if (ProcessManager.RemoveJob(id))
             {
@@ -25,6 +25,6 @@ namespace JobServer.Controllers
             {
                 return GenericResponse.Failure("Unable to delete job");
             }
-        }
+        }*/
     }
 }
